@@ -1,216 +1,57 @@
-# "Cloud" Resources
+# Deploy three VNETS
 
-resource "azurerm_resource_group" "cloud" {
-  name     = "${var.rg_name_cloud}"
-  location = "${var.location_cloud}"
-  tags     = "${var.tags}"     
-}
-
-resource "azurerm_virtual_network" "vnet1" {
-  name                = "${var.vnet1_name}"
-  resource_group_name = "${azurerm_resource_group.cloud.name}"
-  location            = "${azurerm_resource_group.cloud.location}"
-  address_space       = ["${var.address_space1}"] 
-  tags                = "${var.tags}"
-}
-
-resource "azurerm_subnet" "vnet1_default" {
-  name                 = "default"
-  resource_group_name  = "${azurerm_resource_group.cloud.name}"
-  virtual_network_name = "${azurerm_virtual_network.vnet1.name}"
-  address_prefix       = "172.21.1.0/24"
-}
-
-resource "azurerm_virtual_network" "vnet2" {
-  name                = "${var.vnet2_name}"
-  resource_group_name = "${azurerm_resource_group.cloud.name}"
-  location            = "${azurerm_resource_group.cloud.location}"
-  address_space       = ["${var.address_space2}"] 
-  tags                = "${var.tags}"
-}
-
-resource "azurerm_subnet" "vnet2_default" {
-  name                 = "default"
-  resource_group_name  = "${azurerm_resource_group.cloud.name}"
-  virtual_network_name = "${azurerm_virtual_network.vnet2.name}"
-  address_prefix       = "172.22.1.0/24"
-}
-
-resource "azurerm_subnet" "vnet2_gw" {
-  name                 = "GatewaySubnet"
-  resource_group_name  = "${azurerm_resource_group.cloud.name}"
-  virtual_network_name = "${azurerm_virtual_network.vnet2.name}"
-  address_prefix       = "172.22.100.0/24"
-}
-
-
-resource "azurerm_virtual_network_peering" "vnet_peer_1" {
-  name                         = "peer1"
-  resource_group_name          = "${azurerm_resource_group.cloud.name}"
-  virtual_network_name         = "${azurerm_virtual_network.vnet1.name}"
-  remote_virtual_network_id    = "${azurerm_virtual_network.vnet2.id}"
-  allow_virtual_network_access = true
-  allow_forwarded_traffic      = true
-  allow_gateway_transit        = false
-  use_remote_gateways          = true
-
-}
-
-resource "azurerm_virtual_network_peering" "vnet_peer_2" {
-  name                         = "peer2"
-  resource_group_name          = "${azurerm_resource_group.cloud.name}"
-  virtual_network_name         = "${azurerm_virtual_network.vnet2.name}"
-  remote_virtual_network_id    = "${azurerm_virtual_network.vnet1.id}"
-  allow_virtual_network_access = true
-  allow_forwarded_traffic      = true
-  allow_gateway_transit        = true
-  use_remote_gateways          = false
-
-}
-
-# Fake "On Prem" Resources
-
-resource "azurerm_resource_group" "fakeonprem" {
-  name     = "${var.rg_name_fakeonprem}"
-  location = "${var.location_fakeonprem}"
-  tags     = "${var.tags}"     
-}
-
-resource "azurerm_virtual_network" "vnet3" {
-  name                = "${var.vnet3_name}"
-  resource_group_name = "${azurerm_resource_group.fakeonprem.name}"
-  location            = "${azurerm_resource_group.fakeonprem.location}"
-  address_space       = ["${var.address_space3}"] 
-  tags                = "${var.tags}"
-}
-
-resource "azurerm_subnet" "vnet3_default" {
-  name                 = "default"
-  resource_group_name  = "${azurerm_resource_group.fakeonprem.name}"
-  virtual_network_name = "${azurerm_virtual_network.vnet3.name}"
-  address_prefix       = "172.30.1.0/24"
-}
-
-resource "azurerm_subnet" "vnet3_gw" {
-  name                 = "GatewaySubnet"
-  resource_group_name  = "${azurerm_resource_group.fakeonprem.name}"
-  virtual_network_name = "${azurerm_virtual_network.vnet3.name}"
-  address_prefix       = "172.30.100.0/24"
-}
-
-# Public IP Addresses for VPN Gateways
-
-resource "azurerm_public_ip" "gwip2" {
-  name                = "gwip2"
-  location            = "${azurerm_resource_group.cloud.location}"
-  resource_group_name = "${azurerm_resource_group.cloud.name}"
-
-  allocation_method = "Dynamic"
-}
-
-data "azurerm_public_ip" "gwip2" {
-  name                = "${azurerm_public_ip.gwip2.name}"
-  resource_group_name = "${azurerm_resource_group.cloud.name}"
-}
-
-output "gwip2_pip" {
-  value = "${data.azurerm_public_ip.gwip2.ip_address}"
-}
-
-resource "azurerm_public_ip" "gwip3" {
-  name                = "gwip3"
-  location            = "${azurerm_resource_group.fakeonprem.location}"
-  resource_group_name = "${azurerm_resource_group.fakeonprem.name}"
-
-  allocation_method = "Dynamic"
-}
-
-data "azurerm_public_ip" "gwip3" {
-  name                = "${azurerm_public_ip.gwip3.name}"
-  resource_group_name = "${azurerm_resource_group.fakeonprem.name}"
-}
-
-output "gwip3_pip" {
-  value = "${data.azurerm_public_ip.gwip3.ip_address}"
-}
-
-# Interconnect between VNET Gateways
-
-resource "azurerm_virtual_network_gateway" "gw2" {
-  name                = "vnet2-gw"
-  location            = "${azurerm_resource_group.cloud.location}"
-  resource_group_name = "${azurerm_resource_group.cloud.name}"
-
-  type     = "Vpn"
-  vpn_type = "RouteBased"
-
-  active_active = false
-  enable_bgp    = false
-  sku           = "Basic"
-
-  ip_configuration {
-    name                          = "vnetGatewayConfig"
-    public_ip_address_id          = "${azurerm_public_ip.gwip2.id}"
-    private_ip_address_allocation = "Dynamic"
-    subnet_id                     = "${azurerm_subnet.vnet2_gw.id}"
+module "vnets" {
+  source = "./modules/vnets"
   }
-}
-resource "azurerm_virtual_network_gateway" "gw3" {
-  name                = "vnet3-gw"
-  location            = "${azurerm_resource_group.fakeonprem.location}"
-  resource_group_name = "${azurerm_resource_group.fakeonprem.name}"
 
-  type     = "Vpn"
-  vpn_type = "RouteBased"
+# Deploy VMs as jumpboxes
 
-  active_active = false
-  enable_bgp    = false
-  sku           = "Basic"
+module "create_jumpbox_vnet1" {
+  source = "./modules/compute"
+  
+  resource_group_name = module.vnets.rg_cloud
+  location            = var.location_cloud
+  vnet_subnet_id      = module.vnets.vnet1_subnet_id
 
-  ip_configuration {
-    name                          = "vnetGatewayConfig"
-    public_ip_address_id          = "${azurerm_public_ip.gwip3.id}"
-    private_ip_address_allocation = "Dynamic"
-    subnet_id                     = "${azurerm_subnet.vnet3_gw.id}"
-  }
-}
-
-resource "azurerm_local_network_gateway" "vnet2" {
-  name                = "vnet2_localgw_to_vnet3"
-  location            = "${azurerm_resource_group.cloud.location}"
-  resource_group_name = "${azurerm_resource_group.cloud.name}"
-  gateway_address     = "${data.azurerm_public_ip.gwip3.ip_address}"
-  address_space       = ["172.30.1.0/24"]
-}
-
-resource "azurerm_local_network_gateway" "vnet3" {
-  name                = "vnet3_localgw_to_vnet2"
-  location            = "${azurerm_resource_group.fakeonprem.location}"
-  resource_group_name = "${azurerm_resource_group.fakeonprem.name}"
-  gateway_address     = "${data.azurerm_public_ip.gwip2.ip_address}"
-  address_space       = ["172.22.1.0/24"]
+  tags                           = var.tags
+  compute_hostname_prefix        = var.compute_hostname_prefix_jumpbox
+  compute_instance_count         = var.jumpbox_instance_count
+  vm_size                        = var.vm_size
+  os_publisher                   = var.os_publisher
+  os_offer                       = var.os_offer
+  os_sku                         = var.os_sku
+  os_version                     = var.os_version
+  storage_account_type           = var.storage_account_type
+  compute_boot_volume_size_in_gb = var.jumpbox_boot_volume_size_in_gb
+  admin_username                 = var.admin_username
+  admin_password                 = var.admin_password
+  enable_accelerated_networking  = var.enable_accelerated_networking
+  boot_diag_SA_endpoint          = var.boot_diag_SA_endpoint
+  create_public_ip               = 1
+  create_data_disk               = 0
+  assign_bepool                  = 0
+  create_av_set                  = 0
 }
 
-resource "azurerm_virtual_network_gateway_connection" "cloud" {
-  name                = "cloud2fakeonprem"
-  location            = "${azurerm_resource_group.cloud.location}"
-  resource_group_name = "${azurerm_resource_group.cloud.name}"
+# Deploy Windows AKS Cluster
 
-  type                       = "IPsec"
-  virtual_network_gateway_id = "${azurerm_virtual_network_gateway.gw2.id}"
-  local_network_gateway_id   = "${azurerm_local_network_gateway.vnet2.id}"
+module "aks" {
+  source = "./modules/aks"
 
-  shared_key = "4-v3ry-53cr37-1p53c-5h4r3d-k3y"
+  resource_group_name = module.vnets.rg_cloud
+  location            = var.location_cloud
+  vnet_network_name   = module.vnets.vnet1_name
+  prefix              = var.prefix
+  address_prefix      = var.subnet_cidr
+  kubernetes_client_id     = var.kubernetes_client_id
+  kubernetes_client_secret = var.kubernetes_client_secret
+
+
 }
 
-resource "azurerm_virtual_network_gateway_connection" "fakeonprem" {
-  name                = "fakeonprem2cloud"
-  location            = "${azurerm_resource_group.fakeonprem.location}"
-  resource_group_name = "${azurerm_resource_group.fakeonprem.name}"
+# TODO
+# LogicApps ISE
+# APIM
+# Application Gateway
 
-  type                       = "IPsec"
-  virtual_network_gateway_id = "${azurerm_virtual_network_gateway.gw3.id}"
-  local_network_gateway_id   = "${azurerm_local_network_gateway.vnet3.id}"
-
-  shared_key = "4-v3ry-53cr37-1p53c-5h4r3d-k3y"
-}
+# Domain Controllers
