@@ -1,9 +1,9 @@
 variable "rg_name_cloud" {
-    default = "abc_rg_cloud"
+    default = "rg_cloud_def"
    
 }
 variable "rg_name_fakeonprem" {
-    default = "abc_rg_fakeonprem"
+    default = "rg_fakeonprem_def"
    
 }
 

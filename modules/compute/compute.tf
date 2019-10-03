@@ -11,12 +11,12 @@ module "create_boot_sa" {
 
 # Basic VM, No AVset, Windows
 resource "azurerm_virtual_machine" "compute" {
-  count                         = 1
+  count                         = "${var.compute_instance_count}"
   name                          = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}"
   location                      = "${var.location}"
   resource_group_name           = "${var.resource_group_name}"
   vm_size                       = "${var.vm_size}"
-  network_interface_ids         = ["${element(azurerm_network_interface.compute.*.id, count.index)}"]
+  network_interface_ids         = ["${element(concat(azurerm_network_interface.compute.*.id, azurerm_network_interface.compute_public.*.id), count.index)}"]
   delete_os_disk_on_termination = "true"
 
   # Add cloud init
@@ -86,7 +86,7 @@ resource "azurerm_virtual_machine_data_disk_attachment" "vm_data_disks_attachmen
 }
 
 resource "azurerm_network_interface" "compute" {
-  count                         = "${var.compute_instance_count}"
+  count                         = "${((var.compute_instance_count) * (1 - var.create_public_ip))}"
   name                          = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}-nic"  
   location                      = "${var.location}"
   resource_group_name           = "${var.resource_group_name}"
@@ -101,19 +101,36 @@ resource "azurerm_network_interface" "compute" {
   tags = "${var.tags}"
 }
 
-resource "azurerm_network_interface_backend_address_pool_association" "compute" {
-  count                   = "${var.assign_bepool * var.compute_instance_count}"  
-  network_interface_id    = "${element(azurerm_network_interface.compute.*.id, count.index)}"
-  ip_configuration_name   = "ipconfig${count.index}"
-  backend_address_pool_id = "${var.backendpool_id}"
+resource "azurerm_network_interface" "compute_public" {
+  count                         = "${var.compute_instance_count * var.create_public_ip}"
+  name                          = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}-nic"  
+  location                      = "${var.location}"
+  resource_group_name           = "${var.resource_group_name}"
+  enable_accelerated_networking = "${var.enable_accelerated_networking}"
+
+  ip_configuration {
+    name                          = "ipconfig${count.index}"
+    subnet_id                     = "${var.vnet_subnet_id}"
+    private_ip_address_allocation = "Dynamic"
+    public_ip_address_id          = "${element(azurerm_public_ip.compute.*.id, count.index)}"
+  }
+
+  tags = "${var.tags}"
 }
 
 resource "azurerm_public_ip" "compute" {
-  name                         = "${var.compute_hostname_prefix}-public-ip"
-  count                        = "${var.create_public_ip}"
+  name                         = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}-public-ip"
+  count                        = "${var.compute_instance_count * var.create_public_ip}"
   location                     = "${var.location}"
   resource_group_name          = "${var.resource_group_name}"
   allocation_method            = "${var.public_ip_address_allocation}"
   tags                         = "${var.tags}"
   sku                          = "${var.ip_sku}"
+}
+
+resource "azurerm_network_interface_backend_address_pool_association" "compute" {
+  count                   = "${var.assign_bepool * var.compute_instance_count}"  
+  network_interface_id    = "${element(azurerm_network_interface.compute.*.id, count.index)}"
+  ip_configuration_name   = "ipconfig${count.index}"
+  backend_address_pool_id = "${var.backendpool_id}"
 }

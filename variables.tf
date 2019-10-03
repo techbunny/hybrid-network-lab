@@ -1,11 +1,22 @@
-variable "rg_name_cloud" {
-  default = "set_in_vnet.variables.tf"
+# variable "rg_name_cloud" {
+# }
+
+# variable "rg_name_fakeonprem" {
+# }
+
+variable "tenant_id" {
+
 }
 
-variable "rg_name_fakeonprem" {
-  default = "set_in_vnet.variables.tf"
-}
+variable "subscription_id" {
 
+}
+variable "client_id" {
+
+}
+variable "client_secret" {
+
+}
 variable "location_cloud" {
 }
 
@@ -88,9 +99,9 @@ variable "subnet_cidr" {
 }
 
 variable "kubernetes_client_id" {
-
+  default = "0"
 }
 
 variable "kubernetes_client_secret" {
-
+  default = "0"
 }

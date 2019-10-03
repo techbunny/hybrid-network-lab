@@ -62,6 +62,21 @@ resource "azurerm_kubernetes_cluster" "akscluster" {
     vnet_subnet_id = "${azurerm_subnet.akscluster.id}"
   }
 
+  agent_pool_profile {
+    name            = "wincon"
+    count           = "1"
+    vm_size         = "Standard_DS2_v2"
+    os_type         = "Windows"
+    os_disk_size_gb = 30
+    type            = "VirtualMachineScaleSets"
+    max_pods        = 30
+
+    # Required for advanced networking
+    vnet_subnet_id = "${azurerm_subnet.akscluster.id}"
+  }
+
+
+
   service_principal {
     client_id     = "${var.kubernetes_client_id}"
     client_secret = "${var.kubernetes_client_secret}"

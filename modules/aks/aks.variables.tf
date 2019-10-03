@@ -28,3 +28,6 @@ variable "public_ssh_key_path" {
     # default     = "~/.ssh/id_rsa.pub"
     default = "~/.ssh/jcrothopen"
 }
+variable "admin_password" {
+  
+}
