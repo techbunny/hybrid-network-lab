@@ -8,6 +8,12 @@ VNET2 allows VNET1 to use gateway transit for access to VNET3.
 
 ### Compute (Jumpbox)
 
+A VM to be used as a jumpbox is created in VNET 1. 
+
 ### AKS
 
 This module will deploy a 2-node Linux cluster into an existing VNET using the Azure network plugin (AzureCNI)
+
+### Application Gateway
+
+This mondule will deploy an Application Gateway in VNET 2 with a public IP address.  The backend pool is currently empty. 

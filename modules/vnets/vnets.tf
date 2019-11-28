@@ -1,9 +1,9 @@
 # "Cloud" Resources
 
 resource "azurerm_resource_group" "cloud" {
-  name     = "${var.rg_name_cloud}"
-  location = "${var.location_cloud}"
-  tags     = "${var.tags}"     
+  name     = var.rg_name_cloud
+  location = var.location_cloud
+  tags     = var.tags     
 }
 
 resource "azurerm_virtual_network" "vnet1" {

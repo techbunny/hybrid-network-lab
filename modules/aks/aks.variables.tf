@@ -26,7 +26,8 @@ variable "kubernetes_client_secret" {
 variable "public_ssh_key_path" {
   description = "The Path at which your Public SSH Key is located. Defaults to ~/.ssh/id_rsa.pub"
     # default     = "~/.ssh/id_rsa.pub"
-    default = "~/.ssh/jcrothopen"
+    # default = "~/.ssh/jcrothopen"
+   default     = "./.ssh/id_rsa.pub"
 }
 variable "admin_password" {
   
