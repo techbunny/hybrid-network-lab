@@ -5,7 +5,7 @@ module "create_boot_sa" {
   resource_group_name       = var.resource_group_name
   location                  = var.location
   tags                      = var.tags
-  compute_hostname_prefix   = "jumpbox"
+  compute_hostname_prefix   = "winserver01"
 }
 
 

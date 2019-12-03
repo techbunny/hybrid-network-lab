@@ -130,9 +130,9 @@ resource "azurerm_virtual_network_peering" "vnet_peer_2" {
 
 }
 
-# Deploy VMs as jumpboxes
+# Deploy a Windows Server VM
 
-module "create_jumpbox_vnet1" {
+module "create_windowsserver_vnet1" {
   source = "./modules/compute"
 
   resource_group_name = module.vnets.rg_cloud
@@ -140,24 +140,36 @@ module "create_jumpbox_vnet1" {
   vnet_subnet_id      = module.vnets.vnet1_subnet_id
 
   tags                           = var.tags
-  compute_hostname_prefix        = var.compute_hostname_prefix_jumpbox
-  compute_instance_count         = var.jumpbox_instance_count
+  compute_hostname_prefix        = var.compute_hostname_prefix
+  compute_instance_count         = var.compute_instance_count
   vm_size                        = var.vm_size
   os_publisher                   = var.os_publisher
   os_offer                       = var.os_offer
   os_sku                         = var.os_sku
   os_version                     = var.os_version
   storage_account_type           = var.storage_account_type
-  compute_boot_volume_size_in_gb = var.jumpbox_boot_volume_size_in_gb
+  compute_boot_volume_size_in_gb = var.compute_boot_volume_size_in_gb
   admin_username                 = var.admin_username
   admin_password                 = var.admin_password
   enable_accelerated_networking  = var.enable_accelerated_networking
   boot_diag_SA_endpoint          = var.boot_diag_SA_endpoint
-  create_public_ip               = 1
+  create_public_ip               = 0
   create_data_disk               = 0
   assign_bepool                  = 0
   create_av_set                  = 0
 }
+
+# Deploy Bastion Host
+
+module "bastionhost" {
+  source = "./modules/bastion"
+
+  location            = module.vnets.rg_cloud_location
+  resource_group_name = module.vnets.rg_cloud
+  virtual_network_name   = module.vnets.vnet1_name
+
+  }
+
 
 # Deploy Windows AKS Cluster
 
@@ -191,5 +203,4 @@ module "appgateway" {
 # TODO
 # LogicApps ISE
 # APIM
-# Application Gateway
 # Domain Controllers

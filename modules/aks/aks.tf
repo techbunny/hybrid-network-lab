@@ -35,6 +35,8 @@ resource "azurerm_subnet_route_table_association" "akscluster" {
   route_table_id = azurerm_route_table.akscluster.id
 }
 
+# Creates cluster with default linux node pool
+
 resource "azurerm_kubernetes_cluster" "akscluster" {
   name                = var.prefix
   dns_prefix          = var.prefix
@@ -47,8 +49,6 @@ resource "azurerm_kubernetes_cluster" "akscluster" {
     os_disk_size_gb = 30
     type            = "VirtualMachineScaleSets"
     node_count = 2
-
-    # Required for advanced networking
     vnet_subnet_id = azurerm_subnet.akscluster.id
   }
 
@@ -58,6 +58,7 @@ resource "azurerm_kubernetes_cluster" "akscluster" {
     ssh_key {
       key_data = "${file(var.public_ssh_key_path)}"
     }
+
   }
 
   service_principal {
@@ -72,4 +73,23 @@ resource "azurerm_kubernetes_cluster" "akscluster" {
     docker_bridge_cidr = "172.17.0.1/16"
 
   }
+
+  windows_profile {
+    admin_username = "sysadmin"
+    admin_password = "P@ssw0rd12345!!"
+    
+    }
+}
+
+# Created additional Windows Node pool
+
+resource "azurerm_kubernetes_cluster_node_pool" "windows" {
+  name                  = "wincon"
+  kubernetes_cluster_id = azurerm_kubernetes_cluster.akscluster.id
+  vm_size               = "Standard_DS2_v2"
+  node_count            = 1
+  os_type               = "Windows" #capitalization matters
+  vnet_subnet_id        = azurerm_subnet.akscluster.id
+
+
 }
