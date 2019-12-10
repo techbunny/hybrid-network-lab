@@ -140,7 +140,7 @@ module "create_jumpbox_vnet1" {
   vnet_subnet_id      = module.vnets.vnet1_subnet_id
 
   tags                           = var.tags
-  compute_hostname_prefix        = var.compute_hostname_prefix_jumpbox
+  compute_hostname_prefix        = "jumpbox_vnet1"
   compute_instance_count         = var.jumpbox_instance_count
   vm_size                        = var.vm_size
   os_publisher                   = var.os_publisher
@@ -157,6 +157,22 @@ module "create_jumpbox_vnet1" {
   create_data_disk               = 0
   assign_bepool                  = 0
   create_av_set                  = 0
+}
+
+# Deploy API Manager
+
+resource "azurerm_api_management" "apim" {
+  name                = "${var.apim_name}"
+  resource_group_name = module.vnets.rg_cloud
+  location            = module.vnets.rg_cloud_location
+  publisher_name      = "HybridNetworkLab"
+  publisher_email     = "jennelle.crothers@microsoft.com"
+
+  sku_name = "Developer"
+
+  identity {
+    type = "SystemAssigned"
+  }
 }
 
 # Deploy Windows AKS Cluster
@@ -177,6 +193,7 @@ module "create_jumpbox_vnet1" {
 # }
 
 # TODO
+# Add NSG to open RDP to Jumpbox
 # LogicApps ISE
 # APIM
 # Application Gateway

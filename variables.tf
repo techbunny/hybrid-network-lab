@@ -32,11 +32,6 @@ variable "tags" {
   }
 }
 
-variable "compute_hostname_prefix_jumpbox" {
-  description = "Application server host resource prefix"
-  default     = "jumpbox"
-}
-
 variable "jumpbox_instance_count" {
   description = "jumpbox instance count"
   default     = 1
