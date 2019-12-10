@@ -1,3 +1,5 @@
+# These variables are set in the VNET Module
+
 # variable "rg_name_cloud" {
 # }
 
@@ -37,12 +39,10 @@ variable "jumpbox_instance_count" {
   default     = 1
 }
 
-variable "jumpbox_boot_volume_size_in_gb" {
+variable "compute_boot_volume_size_in_gb" {
   description = "Boot volume size of jumpbox instance"
   default     = 128
 }
-
-# VM Image Variables 
 
 variable "enable_accelerated_networking" {
   default = "false"
@@ -86,7 +86,7 @@ variable "storage_account_type" {
 # AKS Variables
 
 variable "prefix" {
-  default = "abc-rg-aks"
+  default = "xyz-rg-aks"
 }
 
 variable "subnet_cidr" {

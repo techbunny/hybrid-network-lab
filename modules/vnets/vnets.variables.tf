@@ -1,14 +1,16 @@
 variable "rg_name_cloud" {
-    default = "rg_cloud_def"
+    default = "xyz_rg_cloud"
    
 }
 variable "rg_name_fakeonprem" {
-    default = "rg_fakeonprem_def"
+    default = "xyz_rg_fakeonprem"
    
 }
 
+# If deploying the Bastion Host, make sure the "location_cloud" variable is set to one of the following regions:
+# West US, East US, West Europe, South Central US, Austrailia East and Japan East. 
 variable "location_cloud" {
-    default = "westus2"
+    default = "westus"
 }
 variable "location_fakeonprem" {
   default = "eastus2"
