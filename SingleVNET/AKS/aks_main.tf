@@ -15,7 +15,7 @@ data "azurerm_subnet" "aks" {
   resource_group_name  = var.resource_group_name
 }
 
-data "azurerm_private_dns_zone" "private" {
+data "azurerm_dns_zone" "public" {
   name                = var.dns_zone
   resource_group_name = var.resource_group_name
 }
@@ -77,7 +77,7 @@ output "kube_config" {
 # AKS DNS Record
 resource "azurerm_dns_a_record" "helloworld_ingress" {
   name                = "helloworld"
-  zone_name           = data.azurerm_private_dns_zone.private.name
+  zone_name           = data.azurerm_dns_zone.public.name
   resource_group_name = var.resource_group_name
   ttl                 = 300
   records             = ["10.100.200.1"]  #IP address of Internal Ingress
