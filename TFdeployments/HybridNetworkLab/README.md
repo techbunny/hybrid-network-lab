@@ -21,3 +21,5 @@ This mondule will deploy an Application Gateway in VNET 2 with a public IP addre
 ### Bastion Host
 
 The Bastion Host feature is currently in preview and only available in the following regions: West US, East US, West Europe, South Central US, Austrailia East and Japan East. 
+
+
