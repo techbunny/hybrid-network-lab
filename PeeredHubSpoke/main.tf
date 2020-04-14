@@ -24,86 +24,79 @@ module "vnets" {
 
 resource "azurerm_virtual_network_peering" "vnet_peer_1" {
   name                         = "peer1to2"
-  resource_group_name          = module.vnets.rg_cloud
+  resource_group_name          = azurerm_resource_group.hubspoke.name
   virtual_network_name         = module.vnets.vnet1_name
   remote_virtual_network_id    = module.vnets.vnet2_id
   allow_virtual_network_access = true
-  allow_forwarded_traffic      = true
+  allow_forwarded_traffic      = false
   allow_gateway_transit        = false
-  use_remote_gateways          = true
-  depends_on                   = [azurerm_virtual_network_gateway_connection.fakeonprem, azurerm_virtual_network_gateway_connection.cloud]
-
+  use_remote_gateways          = false
+  
 }
 
 resource "azurerm_virtual_network_peering" "vnet_peer_2" {
   name                         = "peer2to1"
-  resource_group_name          = module.vnets.rg_cloud
+  resource_group_name          = azurerm_resource_group.hubspoke.name
   virtual_network_name         = module.vnets.vnet2_name
   remote_virtual_network_id    = module.vnets.vnet1_id
   allow_virtual_network_access = true
-  allow_forwarded_traffic      = true
-  allow_gateway_transit        = true
+  allow_forwarded_traffic      = false
+  allow_gateway_transit        = false
   use_remote_gateways          = false
-  depends_on                   = [azurerm_virtual_network_gateway_connection.fakeonprem, azurerm_virtual_network_gateway_connection.cloud]
-  
+ 
 
 }
 
 # Peering between VNET1 and VNET3
 
-resource "azurerm_virtual_network_peering" "vnet_peer_1" {
-  name                         = "peer1to2"
-  resource_group_name          = module.vnets.rg_cloud
+resource "azurerm_virtual_network_peering" "vnet_peer_1b" {
+  name                         = "peer1to3"
+  resource_group_name          = azurerm_resource_group.hubspoke.name
   virtual_network_name         = module.vnets.vnet1_name
-  remote_virtual_network_id    = module.vnets.vnet2_id
+  remote_virtual_network_id    = module.vnets.vnet3_id
   allow_virtual_network_access = true
-  allow_forwarded_traffic      = true
+  allow_forwarded_traffic      = false
   allow_gateway_transit        = false
-  use_remote_gateways          = true
-  depends_on                   = [azurerm_virtual_network_gateway_connection.fakeonprem, azurerm_virtual_network_gateway_connection.cloud]
-
+  use_remote_gateways          = false
+  
 }
 
-resource "azurerm_virtual_network_peering" "vnet_peer_2" {
-  name                         = "peer2to1"
-  resource_group_name          = module.vnets.rg_cloud
-  virtual_network_name         = module.vnets.vnet2_name
+resource "azurerm_virtual_network_peering" "vnet_peer_3" {
+  name                         = "peer3to1"
+  resource_group_name          = azurerm_resource_group.hubspoke.name
+  virtual_network_name         = module.vnets.vnet3_name
   remote_virtual_network_id    = module.vnets.vnet1_id
   allow_virtual_network_access = true
-  allow_forwarded_traffic      = true
-  allow_gateway_transit        = true
+  allow_forwarded_traffic      = false
+  allow_gateway_transit        = false
   use_remote_gateways          = false
-  depends_on                   = [azurerm_virtual_network_gateway_connection.fakeonprem, azurerm_virtual_network_gateway_connection.cloud]
   
-
 }
 
 # Peering between VNET2 and VNET3
 
-resource "azurerm_virtual_network_peering" "vnet_peer_1" {
-  name                         = "peer1to2"
-  resource_group_name          = module.vnets.rg_cloud
-  virtual_network_name         = module.vnets.vnet1_name
-  remote_virtual_network_id    = module.vnets.vnet2_id
+resource "azurerm_virtual_network_peering" "vnet_peer_2b" {
+  name                         = "peer2to3"
+  resource_group_name          = azurerm_resource_group.hubspoke.name
+  virtual_network_name         = module.vnets.vnet2_name
+  remote_virtual_network_id    = module.vnets.vnet3_id
   allow_virtual_network_access = true
-  allow_forwarded_traffic      = true
+  allow_forwarded_traffic      = false
   allow_gateway_transit        = false
-  use_remote_gateways          = true
-  depends_on                   = [azurerm_virtual_network_gateway_connection.fakeonprem, azurerm_virtual_network_gateway_connection.cloud]
-
+  use_remote_gateways          = false
+  
 }
 
-resource "azurerm_virtual_network_peering" "vnet_peer_2" {
-  name                         = "peer2to1"
-  resource_group_name          = module.vnets.rg_cloud
-  virtual_network_name         = module.vnets.vnet2_name
-  remote_virtual_network_id    = module.vnets.vnet1_id
+resource "azurerm_virtual_network_peering" "vnet_peer_3b" {
+  name                         = "peer3to2"
+  resource_group_name          = azurerm_resource_group.hubspoke.name
+  virtual_network_name         = module.vnets.vnet3_name
+  remote_virtual_network_id    = module.vnets.vnet2_id
   allow_virtual_network_access = true
-  allow_forwarded_traffic      = true
-  allow_gateway_transit        = true
+  allow_forwarded_traffic      = false
+  allow_gateway_transit        = false
   use_remote_gateways          = false
-  depends_on                   = [azurerm_virtual_network_gateway_connection.fakeonprem, azurerm_virtual_network_gateway_connection.cloud]
-  
+ 
 
 }
 
@@ -112,8 +105,8 @@ resource "azurerm_virtual_network_peering" "vnet_peer_2" {
 module "create_windowsserver_vnet1" {
   source = "./modules/compute"
 
-  resource_group_name = module.vnets.rg_cloud
-  location            = module.vnets.rg_cloud_location
+  resource_group_name          = azurerm_resource_group.hubspoke.name
+  resource_group_location = azure_resource_group.hubspoke.location
   vnet_subnet_id      = module.vnets.vnet1_subnet_id
 
   tags                           = var.tags
@@ -142,8 +135,8 @@ module "create_windowsserver_vnet1" {
 module "create_windowsserver_vnet3" {
   source = "./modules/compute"
 
-  resource_group_name = module.vnets.rg_cloud
-  location            = module.vnets.rg_cloud_location
+  resource_group_name          = azurerm_resource_group.hubspoke.name
+  resource_group_location = azure_resource_group.hubspoke.location
   vnet_subnet_id      = module.vnets.vnet3_subnet_id
 
   tags                           = var.tags
@@ -173,8 +166,8 @@ module "create_windowsserver_vnet3" {
 module "aks" {
   source = "./modules/aks"
 
-  resource_group_name = module.vnets.rg_cloud
-  location            = module.vnets.rg_cloud_location
+  resource_group_name = azure_resource_group.hubspoke.name
+  resource_group_location = azure_resource_group.hubspoke.location
   vnet_network_name   = module.vnets.vnet2_name
   prefix              = var.prefix
   address_prefix      = var.subnet_cidr

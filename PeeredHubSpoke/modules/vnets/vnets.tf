@@ -34,6 +34,13 @@ resource "azurerm_subnet" "vnet2_default" {
   address_prefix       = "10.10.0.0/24"
 }
 
+resource "azurerm_subnet" "aks" {
+  name                 = "aksSubnet"
+  resource_group_name = var.resource_group_name
+  virtual_network_name = azurerm_virtual_network.custom-vnet.name
+  address_prefix       = "10.10.128.0/17"
+}
+
 
 # Spoke 2 - Staging
 

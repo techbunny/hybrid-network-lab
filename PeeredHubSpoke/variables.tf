@@ -5,9 +5,6 @@ variable "rg_name_hubspoke" {
 variable "location_hubspoke" {
 }
 
-variable "resource_group_location" {
-}
-
 variable "tenant_id" {
 
 }
@@ -15,6 +12,7 @@ variable "tenant_id" {
 variable "subscription_id" {
 
 }
+
 variable "client_id" {
 
 }
@@ -28,7 +26,7 @@ variable "tags" {
   type        = map(string)
 
   default = {
-    application = "vms"
+    application = "PEX"
   }
 }
 
