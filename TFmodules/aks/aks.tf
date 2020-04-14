@@ -7,7 +7,7 @@ resource "azurerm_subnet" "akscluster" {
   virtual_network_name = var.vnet_network_name
 
   # this field is deprecated and will be removed in 2.0 - but is required until then
-  route_table_id = azurerm_route_table.akscluster.id
+  # route_table_id = azurerm_route_table.akscluster.id
 }
 
 # Create all AKS specific resources in a different RG
@@ -56,7 +56,7 @@ resource "azurerm_kubernetes_cluster" "akscluster" {
     admin_username = "sysadmin"
 
     ssh_key {
-      key_data = "${file(var.public_ssh_key_path)}"
+      key_data = file(var.public_ssh_key_path)
     }
 
   }

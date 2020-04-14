@@ -29,7 +29,6 @@ variable "tags" {
     application = "PEX"
   }
 }
-
 variable "jumpbox_instance_count" {
   description = "jumpbox instance count"
   default     = 1

@@ -4,7 +4,7 @@ variable "resource_group_name" {
 variable "location" {
 }
 variable "tags" {
-  type = "map"
+  type = map(string)
 
   default = {
     application = "compute"
@@ -54,7 +54,7 @@ variable "boot_diag_SA_endpoint" {
 
   description = "Blob endpoint for storage account to use for VM Boot diagnostics"
 
-  type = "string"
+  type = string
 
 }
 variable "backendpool_id" {

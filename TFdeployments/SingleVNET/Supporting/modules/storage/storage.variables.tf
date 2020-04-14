@@ -3,7 +3,7 @@ variable "resource_group_name" {
 variable "location" {
 }
 variable "tags" {
-  type = "map"
+  type = map(string)
 
   default = {
     application = "storage"
@@ -17,5 +17,5 @@ variable "diag_storage_account_tier" {
 
 variable "compute_hostname_prefix" {
     description = "Name prefix used for app VMs -- an anchor to generate the SA name"
-    type = "string"
+    type = string
 }

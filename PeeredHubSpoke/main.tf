@@ -9,14 +9,14 @@ resource "azurerm_resource_group" "hubspoke" {
 module "vnets" {
   source = "./modules/vnets"
 
-  resource_group_name = azure_resource_group.hubspoke.name
-  resource_group_location = azure_resource_group.hubspoke.location
-  vnet1_name = "hub"
-  address_space1 = "10.0.0.0/16"
-  vnet2_name = "prod"
-  address_space2 = "10.10.0.0/16"
-  vent3_name = "dev"
-  address_space3 = "172.137.0.0/16"
+  resource_group_name = azurerm_resource_group.hubspoke.name
+  location            = azurerm_resource_group.hubspoke.location
+  vnet1_name          = "hub"
+  address_space1      = "10.0.0.0/16"
+  vnet2_name          = "prod"
+  address_space2      = "10.10.0.0/16"
+  vnet3_name          = "dev"
+  address_space3      = "172.137.0.0/16"
   }
 
 
@@ -103,15 +103,15 @@ resource "azurerm_virtual_network_peering" "vnet_peer_3b" {
 # Deploy a Windows Server VM in Hub
 
 module "create_windowsserver_vnet1" {
-  source = "./modules/compute"
+  source = "../TFmodules/compute"
 
   resource_group_name          = azurerm_resource_group.hubspoke.name
-  resource_group_location = azure_resource_group.hubspoke.location
-  vnet_subnet_id      = module.vnets.vnet1_subnet_id
+  location                     = azurerm_resource_group.hubspoke.location
+  vnet_subnet_id               = module.vnets.vnet1_subnet_id
 
   tags                           = var.tags
-  compute_hostname_prefix        = var.compute_hostname_prefix
-  compute_instance_count         = var.compute_instance_count
+  compute_hostname_prefix        = "hub-server"
+  compute_instance_count         = 1
 
   vm_size                        = var.vm_size
   os_publisher                   = var.os_publisher
@@ -133,15 +133,15 @@ module "create_windowsserver_vnet1" {
 # Deploy a Windows Server VM in Staging
 
 module "create_windowsserver_vnet3" {
-  source = "./modules/compute"
+  source = "../TFmodules/compute"
 
   resource_group_name          = azurerm_resource_group.hubspoke.name
-  resource_group_location = azure_resource_group.hubspoke.location
-  vnet_subnet_id      = module.vnets.vnet3_subnet_id
+  location                     = azurerm_resource_group.hubspoke.location
+  vnet_subnet_id               = module.vnets.vnet3_subnet_id
 
   tags                           = var.tags
-  compute_hostname_prefix        = var.compute_hostname_prefix
-  compute_instance_count         = var.compute_instance_count
+  compute_hostname_prefix        = "dev-server"
+  compute_instance_count         = 1
 
   vm_size                        = var.vm_size
   os_publisher                   = var.os_publisher
@@ -164,10 +164,10 @@ module "create_windowsserver_vnet3" {
 # Deploy Windows AKS Cluster
 
 module "aks" {
-  source = "./modules/aks"
+  source = "../TFmodules/aks"
 
-  resource_group_name = azure_resource_group.hubspoke.name
-  resource_group_location = azure_resource_group.hubspoke.location
+  resource_group_name = azurerm_resource_group.hubspoke.name
+  location            = azurerm_resource_group.hubspoke.location
   vnet_network_name   = module.vnets.vnet2_name
   prefix              = var.prefix
   address_prefix      = var.subnet_cidr
