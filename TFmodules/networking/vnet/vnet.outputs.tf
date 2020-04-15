@@ -7,14 +7,11 @@ output "vnet_id" {
     value = azurerm_virtual_network.vnet.id
 }
 
-data "azurerm_virtual_network" "vnet" {
-  name                = var.vnet_name
-  resource_group_name = var.resource_group_name
-
-}
+# output "default_subnet_id" {
+#   value = data.azurerm_virtual_network.vnet.subnets[0]
+# }
 
 output "default_subnet_id" {
-  value = data.azurerm_virtual_network.vnet.subnets[0]
+  value = azurerm_subnet.vnet.id
 }
-
 

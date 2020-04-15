@@ -53,8 +53,7 @@ module "peeringX" {
   
 }
 
-
-# # Peering between VNET1 and VNET3
+# Peering between VNET1 and VNET3
 
 module "peeringY" {
   source = "../../TFmodules/networking/peering"
@@ -68,7 +67,6 @@ module "peeringY" {
 }
 
 # # Peering between VNET2 and VNET3
-
 
 module "peeringZ" {
   source = "../../TFmodules/networking/peering"
@@ -144,7 +142,6 @@ module "create_windowsserver_vnet3" {
 
 # Deploy Windows AKS Cluster
 
-
 resource "azurerm_subnet" "aks" {
   name                 = "aksSubnet"
   resource_group_name  = azurerm_resource_group.hubspoke.name
@@ -158,7 +155,8 @@ module "aks" {
   resource_group_name = azurerm_resource_group.hubspoke.name
   location            = azurerm_resource_group.hubspoke.location
   vnet_network_name   = module.vnet2.vnet_name
-  prefix              = var.prefix
+  vnet_subnet_id      = azurerm_subnet.aks.id
+  prefix              = "pex"
   address_prefix      = var.subnet_cidr
   kubernetes_client_id     = var.kubernetes_client_id
   kubernetes_client_secret = var.kubernetes_client_secret
