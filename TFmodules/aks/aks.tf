@@ -1,14 +1,14 @@
 # Create a subnet in the existing VNET
 
-resource "azurerm_subnet" "akscluster" {
-  name                 = "aks-subnet"
-  resource_group_name  = var.resource_group_name
-  address_prefix       = var.address_prefix
-  virtual_network_name = var.vnet_network_name
+# resource "azurerm_subnet" "akscluster" {
+#   name                 = "aks-subnet"
+#   resource_group_name  = var.resource_group_name
+#   address_prefix       = var.address_prefix
+#   virtual_network_name = var.vnet_network_name
 
-  # this field is deprecated and will be removed in 2.0 - but is required until then
-  # route_table_id = azurerm_route_table.akscluster.id
-}
+#   # this field is deprecated and will be removed in 2.0 - but is required until then
+#   # route_table_id = azurerm_route_table.akscluster.id
+# }
 
 # Create all AKS specific resources in a different RG
 
