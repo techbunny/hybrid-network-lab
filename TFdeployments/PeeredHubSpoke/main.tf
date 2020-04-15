@@ -40,88 +40,46 @@ module "vnet3" {
   default_subnet_prefix = "172.137.0.0/24"
   }
 
+# Peering between VNET1 and VNET2
 
+module "peeringX" {
+  source = "../../TFmodules/networking/peering"
 
-
-# # Peering between VNET1 and VNET2
-
-# resource "azurerm_virtual_network_peering" "vnet_peer_1" {
-#   name                         = "peer1to2"
-#   resource_group_name          = azurerm_resource_group.hubspoke.name
-#   virtual_network_name         = module.vnets.vnet1_name
-#   remote_virtual_network_id    = module.vnets.vnet2_id
-#   allow_virtual_network_access = true
-#   allow_forwarded_traffic      = false
-#   allow_gateway_transit        = false
-#   use_remote_gateways          = false
+  resource_group_name = azurerm_resource_group.hubspoke.name
+  netA_name      = module.vnet1.vnet_name
+  netA_id        = module.vnet1.vnet_id
+  netB_name      = module.vnet2.vnet_name
+  netB_id        = module.vnet2.vnet_id
   
-# }
+}
 
-# resource "azurerm_virtual_network_peering" "vnet_peer_2" {
-#   name                         = "peer2to1"
-#   resource_group_name          = azurerm_resource_group.hubspoke.name
-#   virtual_network_name         = module.vnets.vnet2_name
-#   remote_virtual_network_id    = module.vnets.vnet1_id
-#   allow_virtual_network_access = true
-#   allow_forwarded_traffic      = false
-#   allow_gateway_transit        = false
-#   use_remote_gateways          = false
- 
-
-# }
 
 # # Peering between VNET1 and VNET3
 
-# resource "azurerm_virtual_network_peering" "vnet_peer_1b" {
-#   name                         = "peer1to3"
-#   resource_group_name          = azurerm_resource_group.hubspoke.name
-#   virtual_network_name         = module.vnets.vnet1_name
-#   remote_virtual_network_id    = module.vnets.vnet3_id
-#   allow_virtual_network_access = true
-#   allow_forwarded_traffic      = false
-#   allow_gateway_transit        = false
-#   use_remote_gateways          = false
-  
-# }
+module "peeringY" {
+  source = "../../TFmodules/networking/peering"
 
-# resource "azurerm_virtual_network_peering" "vnet_peer_3" {
-#   name                         = "peer3to1"
-#   resource_group_name          = azurerm_resource_group.hubspoke.name
-#   virtual_network_name         = module.vnets.vnet3_name
-#   remote_virtual_network_id    = module.vnets.vnet1_id
-#   allow_virtual_network_access = true
-#   allow_forwarded_traffic      = false
-#   allow_gateway_transit        = false
-#   use_remote_gateways          = false
+  resource_group_name = azurerm_resource_group.hubspoke.name
+  netA_name      = module.vnet1.vnet_name
+  netA_id        = module.vnet1.vnet_id
+  netB_name      = module.vnet3.vnet_name
+  netB_id        = module.vnet3.vnet_id
   
-# }
+}
 
 # # Peering between VNET2 and VNET3
 
-# resource "azurerm_virtual_network_peering" "vnet_peer_2b" {
-#   name                         = "peer2to3"
-#   resource_group_name          = azurerm_resource_group.hubspoke.name
-#   virtual_network_name         = module.vnets.vnet2_name
-#   remote_virtual_network_id    = module.vnets.vnet3_id
-#   allow_virtual_network_access = true
-#   allow_forwarded_traffic      = false
-#   allow_gateway_transit        = false
-#   use_remote_gateways          = false
+
+module "peeringZ" {
+  source = "../../TFmodules/networking/peering"
+
+  resource_group_name = azurerm_resource_group.hubspoke.name
+  netA_name      = module.vnet2.vnet_name
+  netA_id        = module.vnet2.vnet_id
+  netB_name      = module.vnet3.vnet_name
+  netB_id        = module.vnet3.vnet_id
   
-# }
-
-# resource "azurerm_virtual_network_peering" "vnet_peer_3b" {
-#   name                         = "peer3to2"
-#   resource_group_name          = azurerm_resource_group.hubspoke.name
-#   virtual_network_name         = module.vnets.vnet3_name
-#   remote_virtual_network_id    = module.vnets.vnet2_id
-#   allow_virtual_network_access = true
-#   allow_forwarded_traffic      = false
-#   allow_gateway_transit        = false
-#   use_remote_gateways          = false
- 
-
-# }
+}
 
 # Deploy a Windows Server VM in Hub
 

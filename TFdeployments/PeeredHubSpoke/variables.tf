@@ -95,3 +95,23 @@ variable "kubernetes_client_id" {
 variable "kubernetes_client_secret" {
   default = "0"
 }
+
+
+# Peering Variables
+
+# variable "netA_name" {
+
+# }
+
+# variable "netB_name" {
+    
+# }
+
+
+# variable "netA_id" {
+
+# }
+
+# variable "netB_id" {
+    
+# }
