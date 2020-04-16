@@ -11,7 +11,7 @@ resource "azurerm_resource_group" "rg" {
 
 # Virtual Network
 module "create_vnet" {
-  source = "./modules/vnet"
+  source = "../../../TFmodules/networking/vnet"
 
   resource_group_name = azurerm_resource_group.rg.name
   location            = var.location
@@ -22,7 +22,7 @@ module "create_vnet" {
 
 # Private DNS Zone
 module "create_private_dns" {
-  source = "./modules/dns"
+  source = "../../../TFmodules/dns"
 
   resource_group_name = azurerm_resource_group.rg.name
   dns_zone            = var.dns_zone
@@ -32,7 +32,7 @@ module "create_private_dns" {
 # Deploy a Windows Server VM
 
 module "create_windowsserver" {
-  source = "./modules/compute"
+  source = "../../../TFmodules/compute"
 
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
