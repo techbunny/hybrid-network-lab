@@ -45,7 +45,8 @@ module "vnet3" {
 module "peeringX" {
   source = "../../TFmodules/networking/peering"
 
-  resource_group_name = azurerm_resource_group.hubspoke.name
+  resource_group_nameA = azurerm_resource_group.hubspoke.name
+  resource_group_nameB = azurerm_resource_group.hubspoke.name
   netA_name      = module.vnet1.vnet_name
   netA_id        = module.vnet1.vnet_id
   netB_name      = module.vnet2.vnet_name
@@ -58,7 +59,8 @@ module "peeringX" {
 module "peeringY" {
   source = "../../TFmodules/networking/peering"
 
-  resource_group_name = azurerm_resource_group.hubspoke.name
+  resource_group_nameA = azurerm_resource_group.hubspoke.name
+  resource_group_nameB = azurerm_resource_group.hubspoke.name
   netA_name      = module.vnet1.vnet_name
   netA_id        = module.vnet1.vnet_id
   netB_name      = module.vnet3.vnet_name
@@ -71,7 +73,8 @@ module "peeringY" {
 module "peeringZ" {
   source = "../../TFmodules/networking/peering"
 
-  resource_group_name = azurerm_resource_group.hubspoke.name
+  resource_group_nameA = azurerm_resource_group.hubspoke.name
+  resource_group_nameB = azurerm_resource_group.hubspoke.name
   netA_name      = module.vnet2.vnet_name
   netA_id        = module.vnet2.vnet_id
   netB_name      = module.vnet3.vnet_name
