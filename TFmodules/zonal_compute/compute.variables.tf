@@ -1,50 +1,11 @@
-# Subscription Variables
-
-variable "tenant_id" {
+variable "resource_group_name" {
 
 }
 
-variable "subscription_id" {
+variable "location" {
 
 }
 
-variable "client_id" {
-
-}
-variable "client_secret" {
-
-}
-
-# Core Infra Variables
-
-variable "region1" {
-    default = "eastus"
-}
-
-variable "region2" {
-    default = "centralus"
-}
-
-variable "region1_name" {
-    default = "Region1_Core"
-}
-
-variable "region2_name" {
-    default = "Region2_Core"
-}
-
-
-variable "tags" {
-  description = "ARM resource tags to any resource types which accept tags"
-  type        = map(string)
-
-  default = {
-    application = "CoreCard"
-  }
-}
-
-
-# Windows DC Variables
 
 variable "compute_boot_volume_size_in_gb" {
   description = "Boot volume size of jumpbox instance"
@@ -85,4 +46,39 @@ variable "admin_password" {
 variable "storage_account_type" {
   default = "Standard_LRS"
 }
+
+variable "os_sa_type" {
+  default = "Standard_LRS"
+}
+
+variable "tags" {
+  description = "ARM resource tags to any resource types which accept tags"
+  type        = map(string)
+
+  default = {
+    application = "CoreCard"
+  }
+}
+
+variable "compute_instance_count" {
+
+}
+
+variable "vnet_subnet_id" {
+
+}
+
+variable "compute_hostname_prefix" {
+
+}
+
+variable "zones" {
+  
+}
+
+
+variable "vm_size" {
+}
+
+
 

@@ -10,6 +10,29 @@ resource "azurerm_resource_group" "region2" {
   tags     = var.tags     
 }
 
+# Create Proximity Placement Groups
+
+module "ppg_region1" {
+  source = "../../../TFmodules/ppg"
+
+  ppg_name            = "Region1_PPG"
+  location            = azurerm_resource_group.region1.location
+  resource_group_name = azurerm_resource_group.region1.name
+  tags                = var.tags
+
+}
+
+module "ppg_region2" {
+  source = "../../../TFmodules/ppg"
+
+  ppg_name            = "Region2_PPG"
+  location            = azurerm_resource_group.region2.location
+  resource_group_name = azurerm_resource_group.region2.name
+  tags                = var.tags
+
+}
+
+
 # Deploy VNETS with Default Subnets
 
 module "vnet_region1" {
@@ -72,7 +95,7 @@ module "create_windowsserver_region1" {
   admin_password                 = var.admin_password
   enable_accelerated_networking  = var.enable_accelerated_networking
   boot_diag_SA_endpoint          = var.boot_diag_SA_endpoint
-  create_public_ip               = 1
+  create_public_ip               = 0
   create_data_disk               = 1
   assign_bepool                  = 0
   create_av_set                  = 0
@@ -101,7 +124,7 @@ module "create_windowsserver_region2" {
   admin_password                 = var.admin_password
   enable_accelerated_networking  = var.enable_accelerated_networking
   boot_diag_SA_endpoint          = var.boot_diag_SA_endpoint
-  create_public_ip               = 1
+  create_public_ip               = 0
   create_data_disk               = 1
   assign_bepool                  = 0
   create_av_set                  = 0
