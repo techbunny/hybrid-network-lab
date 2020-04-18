@@ -6,6 +6,9 @@ variable "location" {
 
 }
 
+variable "region_ppg_id" {
+
+}
 
 variable "compute_boot_volume_size_in_gb" {
   description = "Boot volume size of jumpbox instance"
@@ -80,5 +83,7 @@ variable "zones" {
 variable "vm_size" {
 }
 
+variable "p30_instance_count" {
 
+}
 

@@ -17,29 +17,28 @@ variable "client_secret" {
 
 # Core Infra Variables
 
-variable "region1" {
+variable "region" {
     default = "eastus"
 }
 
-variable "region2" {
-    default = "centralus"
-}
-
-variable "region1_name" {
+variable "region_name" {
     default = "Region1_FrontEnd"
 }
 
-variable "region2_name" {
-    default = "Region2_FrontEnd"
+variable "region_ppg" {
+   default = "EastUS_ppg"
 }
 
+variable "core_region_name" {
+  default = "EastUS_Core"
+}
 
 variable "tags" {
   description = "ARM resource tags to any resource types which accept tags"
   type        = map(string)
 
   default = {
-    application = "CoreCard"
+    CET = "Jennelle"
   }
 }
 
@@ -47,7 +46,6 @@ variable "tags" {
 
 
 variable "compute_boot_volume_size_in_gb" {
-  description = "Boot volume size of jumpbox instance"
   default     = 128
 }
 

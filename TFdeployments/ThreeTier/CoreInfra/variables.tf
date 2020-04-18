@@ -26,11 +26,20 @@ variable "region2" {
 }
 
 variable "region1_name" {
-    default = "Region1_Core"
+    default = "EastUS_Core"
 }
 
 variable "region2_name" {
-    default = "Region2_Core"
+    default = "CentralUS_Core"
+}
+
+variable "region1_ppg" {
+   default = "EastUS_ppg"
+
+}
+
+variable "region2_ppg" {
+  default = "CentralUS_ppg"
 }
 
 

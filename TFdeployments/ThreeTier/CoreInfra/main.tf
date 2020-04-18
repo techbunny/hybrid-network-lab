@@ -15,7 +15,7 @@ resource "azurerm_resource_group" "region2" {
 module "ppg_region1" {
   source = "../../../TFmodules/ppg"
 
-  ppg_name            = "Region1_PPG"
+  ppg_name            = var.region1_ppg
   location            = azurerm_resource_group.region1.location
   resource_group_name = azurerm_resource_group.region1.name
   tags                = var.tags
@@ -25,7 +25,7 @@ module "ppg_region1" {
 module "ppg_region2" {
   source = "../../../TFmodules/ppg"
 
-  ppg_name            = "Region2_PPG"
+  ppg_name            = var.region2_ppg
   location            = azurerm_resource_group.region2.location
   resource_group_name = azurerm_resource_group.region2.name
   tags                = var.tags
