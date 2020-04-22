@@ -4,10 +4,10 @@ resource "azurerm_resource_group" "rg_data" {
   tags     = var.tags    
 }
 
-data "azurerm_proximity_placement_group" "region_ppg" {
-  name                = "${var.region_name}_ppg"
-  resource_group_name = "${var.region_name}_core"
-  }
+# data "azurerm_proximity_placement_group" "region_ppg" {
+#   name                = "${var.region_name}_ppg"
+#   resource_group_name = "${var.region_name}_core"
+#   }
 
 
 # Add Subnets to Core Networks in each Region
@@ -28,20 +28,19 @@ resource "azurerm_subnet" "dataBE" {
 # Build SQL Servers
 
 module "sql_server" {
-  source = "../../../TFmodules/zonal_compute"
+  source = "../../../TFmodules/zr_compute"
 
   resource_group_name          = azurerm_resource_group.rg_data.name
   location                     = azurerm_resource_group.rg_data.location
   vnet_subnet_id               = azurerm_subnet.dataBE.id
-  region_ppg_id                = data.azurerm_proximity_placement_group.region_ppg.id
+  region_name                  = var.region_name
     
   tags                           = var.tags
   compute_hostname_prefix        = "sql-${var.region_name}"
   compute_instance_count         = 2
   p30_instance_count             = 10
 
-  vm_size                        = "Standard_DS11_v2"
-  zones                          = "1"
+  vm_size                        = "Standard_DS3_v2"
   os_publisher                   = var.os_publisher
   os_offer                       = var.os_offer
   os_sku                         = var.os_sku

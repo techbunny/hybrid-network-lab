@@ -8,15 +8,13 @@ resource "azurerm_managed_disk" "datadisk" {
   storage_account_type = var.data_sa_type
   disk_size_gb         = var.disk_size_gb
   create_option        = "Empty"
-  zones                = [var.zones]
-  zones                = [count.index]
+  zones                = ["${(count.index % 2) + 1}"]
   tags = var.tags
 
 }
 
 
 resource "azurerm_virtual_machine_data_disk_attachment" "datadisk" {
-  # count              = var.disk_instance_count
   count              = var.compute_instance_count * var.disk_instance_count
   managed_disk_id    = azurerm_managed_disk.datadisk[count.index].id
   virtual_machine_id = element(concat(var.vm_id), count.index)
@@ -60,10 +58,6 @@ variable "tags" {
 }
 
 variable "vm_id" {
-
-}
-
-variable "zones" {
 
 }
 

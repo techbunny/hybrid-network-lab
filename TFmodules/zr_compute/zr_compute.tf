@@ -14,17 +14,15 @@ module "create_boot_sa" {
   compute_hostname_prefix   = var.compute_hostname_prefix
 }
 
-# Basic VM, Zonal, Windows
+# Basic VM, Zone_Redundant, Windows
 resource "azurerm_virtual_machine" "compute" {
 
   count                         = var.compute_instance_count
   name                          = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}"
-  #name                          = "z${each.key}-${var.compute_hostname_prefix}"
   location                      = var.location
   resource_group_name           = var.resource_group_name
   vm_size                       = var.vm_size
   network_interface_ids         = [element(concat(azurerm_network_interface.compute.*.id), count.index)]
-  # network_interface_ids         = [azurerm_network_interface.compute.*.id]
   delete_os_disk_on_termination = "true"
   delete_data_disks_on_termination = "true"
   proximity_placement_group_id  = data.azurerm_proximity_placement_group.region_ppg[count.index].id 
@@ -41,7 +39,6 @@ resource "azurerm_virtual_machine" "compute" {
 
   storage_os_disk {
     name              = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}-disk-OS"
-    # name = "z${each.key}-${var.compute_hostname_prefix}-disk-os"
     create_option     = "FromImage"
     caching           = "ReadWrite"
     disk_size_gb      = 128
@@ -50,7 +47,6 @@ resource "azurerm_virtual_machine" "compute" {
 
   os_profile {
     computer_name  = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}"
-    # computer_name = "z${each.key}-${var.compute_hostname_prefix}"
     admin_username = var.admin_username
     admin_password = var.admin_password
   }
@@ -67,12 +63,11 @@ resource "azurerm_virtual_machine" "compute" {
   }
 }
 
-module "create_datadisk_zone1" {
+module "create_datadisks" {
   source  = "../datadisk"
 
   compute_instance_count    = var.compute_instance_count
-  # disk_instance_count       = var.p30_instance_count * ((trim("${data.azurerm_proximity_placement_group.region_ppg.0.name}","${var.region_name}_ppg-0")) - 1)
-  disk_instance_count       = var.p30_instance_count
+   disk_instance_count       = var.p30_instance_count
   resource_group_name       = var.resource_group_name
   location                  = var.location
   tags                      = var.tags
@@ -83,36 +78,11 @@ module "create_datadisk_zone1" {
   vm_id                     = azurerm_virtual_machine.compute.*.id
   vm_name                   = azurerm_virtual_machine.compute.*.name
   compute_hostname_prefix   = var.compute_hostname_prefix
-  # zones                     = "1"
-  # zones = "${(trim("${azurerm_virtual_machine.compute.*.name}","${var.compute_hostname_prefix}-0")) % 2 + 1}"
-  # zones = "${(trim("${data.azurerm_proximity_placement_group.region_ppg.name}","${var.compute_hostname_prefix}-0")) % 2 + 1}"
-}
-
-# module "create_datadisk_zone2" {
-#   source  = "../datadisk"
-
-#   compute_instance_count    = var.compute_instance_count
-#   disk_instance_count       = var.p30_instance_count * ((trim("${data.azurerm_proximity_placement_group.region_ppg.1.name}","${var.region_name}_ppg-0")) - 1)
-#   resource_group_name       = var.resource_group_name
-#   location                  = var.location
-#   tags                      = var.tags
-#   disk_name                 = "${var.compute_hostname_prefix}-data"
-#   data_sa_type              = "Premium_LRS"
-#   disk_size_gb              = 1024
-#   disk_code_name            = "P30"
-#   vm_id                     = azurerm_virtual_machine.compute.*.id
-#   vm_name                   = azurerm_virtual_machine.compute.*.name
-#   compute_hostname_prefix   = var.compute_hostname_prefix
-#   zones                     = "2"
-#   # zones                     = var.in_zones
-#   # zones = "${(trim("${azurerm_virtual_machine.compute.*.name}","${var.compute_hostname_prefix}-0")) % 2 + 1}"
-#   # zones = "${(trim("${data.azurerm_proximity_placement_group.region_ppg.name}","${var.compute_hostname_prefix}-0")) % 2 + 1}"
-# }
+  }
 
 resource "azurerm_network_interface" "compute" {
   count                         = var.compute_instance_count
   name                          = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}-nic" 
-  # name                          = "z${each.key}-${var.compute_hostname_prefix}-nic" 
   location                      = var.location
   resource_group_name           = var.resource_group_name
   enable_accelerated_networking = var.enable_accelerated_networking
@@ -128,7 +98,6 @@ resource "azurerm_network_interface" "compute" {
 
 resource "azurerm_network_interface_backend_address_pool_association" "compute" {
   count                   = var.assign_bepool * var.compute_instance_count  
-  #network_interface_id    = azurerm_network_interface.compute[each.key]
   network_interface_id    = element(azurerm_network_interface.compute.*.id, count.index)
   ip_configuration_name   = "ipconfig${count.index}"
   backend_address_pool_id = var.backendpool_id

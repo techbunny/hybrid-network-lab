@@ -92,11 +92,3 @@ variable "assign_bepool" {
   
 }
 
-# variable "zones" {
-
-# }
-
-# variable "in_zones" {
-#   type = list(string)
-# }
-

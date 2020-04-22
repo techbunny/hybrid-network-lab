@@ -22,7 +22,7 @@ variable "region_loc" {
 }
 
 variable "region_name" {
-    default = "Region1"
+    default = "RegionA"
 }
 
 
