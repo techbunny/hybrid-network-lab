@@ -10,6 +10,10 @@ variable "resource_group_name" {
 
 }
 
+variable "ppg_instance_count" {
+
+}
+
 variable "tags" {
   type        = map(string)
 
@@ -19,13 +23,14 @@ variable "tags" {
 }
 
 resource "azurerm_proximity_placement_group" "ppg" {
-  name                = var.ppg_name
+  count               = var.ppg_instance_count
+  name                = "${var.ppg_name}-${format("%.02d",count.index + 1)}" 
   location            = var.location
   resource_group_name = var.resource_group_name
   tags = var.tags
 }
 
 output "ppg_id" {
-    value = azurerm_proximity_placement_group.ppg.id
+    value = azurerm_proximity_placement_group.ppg.*.id
 }
 

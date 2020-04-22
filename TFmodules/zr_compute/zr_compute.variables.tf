@@ -6,9 +6,11 @@ variable "location" {
 
 }
 
-variable "region_ppg_id" {
+variable "region_name" {
 
 }
+
+
 
 variable "compute_boot_volume_size_in_gb" {
   description = "Boot volume size of jumpbox instance"
@@ -75,15 +77,26 @@ variable "compute_hostname_prefix" {
 
 }
 
-variable "zones" {
-  
-}
-
-
 variable "vm_size" {
 }
 
 variable "p30_instance_count" {
 
 }
+
+variable "backendpool_id" {
+  
+}
+
+variable "assign_bepool" {
+  
+}
+
+# variable "zones" {
+
+# }
+
+# variable "in_zones" {
+#   type = list(string)
+# }
 

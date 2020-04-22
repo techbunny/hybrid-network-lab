@@ -1,4 +1,4 @@
-# Subscription Variables
+# Subscriptin Variables
 
 variable "tenant_id" {
 
@@ -15,23 +15,16 @@ variable "subscription_id" {
 
 # }
 
-# Core Infra Variables
+# Region Variables
 
-variable "region1_loc" {
+variable "region_loc" {
     default = "eastus"
 }
 
-variable "region2_loc" {
-    default = "eastus2"
+variable "region_name" {
+    default = "Region1"
 }
 
-variable "region1_name" {
-    default = "RegionA"
-}
-
-variable "region2_name" {
-    default = "RegionB"
-}
 
 variable "tags" {
   description = "ARM resource tags to any resource types which accept tags"
@@ -42,11 +35,10 @@ variable "tags" {
   }
 }
 
+# Web Server Variables
 
-# Windows DC Variables
 
 variable "compute_boot_volume_size_in_gb" {
-  description = "Boot volume size of jumpbox instance"
   default     = 128
 }
 
@@ -85,3 +77,6 @@ variable "storage_account_type" {
   default = "Standard_LRS"
 }
 
+variable "backendpool_id" {
+  default = null
+}

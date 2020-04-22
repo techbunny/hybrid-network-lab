@@ -8,29 +8,21 @@ variable "subscription_id" {
 
 }
 
-variable "client_id" {
+# variable "client_id" {
 
-}
-variable "client_secret" {
+# }
+# variable "client_secret" {
 
-}
+# }
 
 # Core Infra Variables
 
-variable "region" {
+variable "region_loc" {
     default = "eastus"
 }
 
 variable "region_name" {
-    default = "Region1_FrontEnd"
-}
-
-variable "region_ppg" {
-   default = "EastUS_ppg"
-}
-
-variable "core_region_name" {
-  default = "EastUS_Core"
+    default = "RegionA"
 }
 
 variable "tags" {
@@ -38,7 +30,7 @@ variable "tags" {
   type        = map(string)
 
   default = {
-    CET = "Jennelle"
+    owner       = "jcroth"
   }
 }
 
@@ -83,4 +75,5 @@ variable "admin_password" {
 variable "storage_account_type" {
   default = "Standard_LRS"
 }
+
 

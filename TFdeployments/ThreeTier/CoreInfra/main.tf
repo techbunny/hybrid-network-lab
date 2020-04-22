@@ -1,12 +1,12 @@
 resource "azurerm_resource_group" "region1" {
-  name     = var.region1_name
-  location = var.region1
+  name     = "${var.region1_name}_core"
+  location = var.region1_loc
   tags     = var.tags     
 }
 
 resource "azurerm_resource_group" "region2" {
-  name     = var.region2_name
-  location = var.region2
+  name     = "${var.region2_name}_core"
+  location = var.region2_loc
   tags     = var.tags     
 }
 
@@ -15,7 +15,8 @@ resource "azurerm_resource_group" "region2" {
 module "ppg_region1" {
   source = "../../../TFmodules/ppg"
 
-  ppg_name            = var.region1_ppg
+  ppg_instance_count  = 2
+  ppg_name            = "${var.region1_name}_ppg"
   location            = azurerm_resource_group.region1.location
   resource_group_name = azurerm_resource_group.region1.name
   tags                = var.tags
@@ -25,7 +26,8 @@ module "ppg_region1" {
 module "ppg_region2" {
   source = "../../../TFmodules/ppg"
 
-  ppg_name            = var.region2_ppg
+  ppg_instance_count  = 2
+  ppg_name            = "${var.region2_name}_ppg"
   location            = azurerm_resource_group.region2.location
   resource_group_name = azurerm_resource_group.region2.name
   tags                = var.tags
@@ -41,7 +43,7 @@ module "vnet_region1" {
   resource_group_name = azurerm_resource_group.region1.name
   location            = azurerm_resource_group.region1.location
 
-  vnet_name          = "region1_vnet"
+  vnet_name          = "${var.region1_name}_vnet"
   address_space      = "10.1.0.0/16"
   default_subnet_prefix = "10.1.1.0/24"
 }
@@ -52,7 +54,7 @@ module "vnet_region2" {
   resource_group_name = azurerm_resource_group.region2.name
   location            = azurerm_resource_group.region2.location
 
-  vnet_name          = "region2_vnet"
+  vnet_name          = "${var.region2_name}_vnet"
   address_space      = "10.2.0.0/16"
   default_subnet_prefix = "10.2.1.0/24"
 }
@@ -81,7 +83,7 @@ module "create_windowsserver_region1" {
   vnet_subnet_id               = module.vnet_region1.default_subnet_id
 
   tags                           = var.tags
-  compute_hostname_prefix        = "DC-region1"
+  compute_hostname_prefix        = "DC-${var.region1_name}"
   compute_instance_count         = 1
 
   vm_size                        = "Standard_D2_v2"
@@ -110,7 +112,7 @@ module "create_windowsserver_region2" {
   vnet_subnet_id               = module.vnet_region2.default_subnet_id
 
   tags                           = var.tags
-  compute_hostname_prefix        = "DC-region2"
+  compute_hostname_prefix        = "DC-${var.region2_name}"
   compute_instance_count         = 1
 
   vm_size                        = "Standard_D2_v2"
