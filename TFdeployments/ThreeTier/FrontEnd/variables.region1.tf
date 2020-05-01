@@ -76,4 +76,21 @@ variable "storage_account_type" {
   default = "Standard_LRS"
 }
 
+# DSC Variables
+
+
+variable "dsc_key" {
+  
+}
+
+variable "dsc_endpoint" {
+  
+}
+
+variable dsc_config {
+}
+
+variable dsc_mode {
+  default = "applyAndMonitor"
+}
 

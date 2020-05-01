@@ -11,3 +11,8 @@ output "default_subnet_id" {
   value = azurerm_subnet.vnet.id
 }
 
+output "default_subnet_name" {
+  value = azurerm_subnet.vnet.name
+}
+
+
