@@ -125,9 +125,8 @@ module "app_server" {
   backendpool_id                   = module.app_lb.app_backendpool_id
   outbound_backendpool_id          = data.azurerm_lb_backend_address_pool.lb.id
 
-
-
 }
+
 # Create LB for App VMs
 
 module "app_lb" {

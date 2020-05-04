@@ -149,3 +149,27 @@ resource "azurerm_virtual_machine_extension" "dsc" {
     }
 PROTECTED_SETTINGS
 }
+
+resource "azurerm_virtual_machine_extension" "joindomain" {
+  count = var.compute_instance_count
+  name                 = "joindomain" 
+  virtual_machine_id   = element(azurerm_virtual_machine.compute.*.id, count.index)
+  publisher            = "Microsoft.Compute"
+  type                 = "JsonADDomainExtension"
+  type_handler_version = "1.3"
+
+  settings = <<SETTINGS
+      {
+        "Name": "EXAMPLE.COM",
+        "User": "EXAMPLE.COM\\azureuser",
+        "Restart": "true",
+        "Options": "3"
+      }
+    SETTINGS
+
+  protected_settings = <<PROTECTED_SETTINGS
+    {
+      "Password": "YourPasswordHere"
+    }
+PROTECTED_SETTINGS
+}
