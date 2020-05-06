@@ -57,20 +57,20 @@ module "web_server" {
   admin_password                 = var.admin_password
   enable_accelerated_networking  = var.enable_accelerated_networking
   boot_diag_SA_endpoint          = var.boot_diag_SA_endpoint
-  # create_public_ip               = 0
-  # create_data_disk               = 1
   assign_bepool                    = 1
   backendpool_id                   = module.web_lb.app_backendpool_id
   outbound_backendpool_id          = data.azurerm_lb_backend_address_pool.lb.id
-  dsc_config                       = "webserver.localhost"
+  dsc_config                       = "IISInstall.localhost"
   dsc_key                          = var.dsc_key
   dsc_endpoint                     = var.dsc_endpoint
+  domain_name                      = "IMPERFECTLAB.COM"
+  domain_user                      = "IMPERFECTLAB.COM\\sysadmin"
 
 }
 
 module "web_lb" {
   source = "../../../TFmodules/loadbalancer/lb_internal"
-
+  
   lbname                         = "web-lb-internal"
   location                       = azurerm_resource_group.rg_web.location
   region_name                    = azurerm_resource_group.rg_web.name
@@ -97,7 +97,7 @@ module "rules_probes" {
 # Build App Servers
 
 module "app_server" {
-  source = "../../../TFmodules/zr_compute"
+  source = "../../../TFmodules/zr_compute_dsc"
 
   resource_group_name          = azurerm_resource_group.rg_app.name
   location                     = azurerm_resource_group.rg_app.location
@@ -119,11 +119,14 @@ module "app_server" {
   admin_password                 = var.admin_password
   enable_accelerated_networking  = var.enable_accelerated_networking
   boot_diag_SA_endpoint          = var.boot_diag_SA_endpoint
-  # create_public_ip               = 0
-  # create_data_disk               = 1
   assign_bepool                    = 1
   backendpool_id                   = module.app_lb.app_backendpool_id
   outbound_backendpool_id          = data.azurerm_lb_backend_address_pool.lb.id
+  dsc_config                       = "DiskAttach.localhost"
+  dsc_key                          = var.dsc_key
+  dsc_endpoint                     = var.dsc_endpoint
+  domain_name                      = "IMPERFECTLAB.COM"
+  domain_user                      = "IMPERFECTLAB.COM\\sysadmin"
 
 }
 
@@ -170,7 +173,7 @@ module "vmss_web_server" {
   p30_instance_count             = 2
 
   vm_size                        = "Standard_DS3_v2"
-  vmss_name                      = "web"
+  vmss_name                      = "web2"
   os_publisher                   = var.os_publisher
   os_offer                       = var.os_offer
   os_sku                         = var.os_sku
@@ -181,14 +184,15 @@ module "vmss_web_server" {
   admin_password                 = var.admin_password
   enable_accelerated_networking  = var.enable_accelerated_networking
   boot_diag_SA_endpoint          = var.boot_diag_SA_endpoint
-  # create_public_ip               = 0
-  # create_data_disk               = 1
   assign_bepool                    = 1
   backendpool_id                   = module.web_lb.app_backendpool_id
   outbound_backendpool_id          = data.azurerm_lb_backend_address_pool.lb.id
-  dsc_config                       = "webserver.localhost"
+  health_probe_id                  = module.rules_probes.probe_id
+  dsc_config                       = "IISInstall.localhost"
   dsc_key                          = var.dsc_key
   dsc_endpoint                     = var.dsc_endpoint
+  domain_name                      = "IMPERFECTLAB.COM"
+  domain_user                      = "IMPERFECTLAB.COM\\sysadmin"
 
 }
 

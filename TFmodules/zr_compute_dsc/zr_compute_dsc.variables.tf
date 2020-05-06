@@ -28,6 +28,15 @@ variable dsc_mode {
   default = "applyAndAutoCorrect"
 }
 
+# Domain Join Variables
+
+variable domain_name {
+
+}
+
+variable domain_user {
+
+}
 
 
 

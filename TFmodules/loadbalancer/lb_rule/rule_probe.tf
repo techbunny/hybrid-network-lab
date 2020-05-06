@@ -30,3 +30,9 @@ variable "frontend_name" {
 variable "backend_address_pool_id" {
 
 }
+
+# Outputs from LB Module
+
+output "probe_id" {
+    value = azurerm_lb_probe.http.id
+}

@@ -34,7 +34,6 @@ module "ppg_region2" {
 
 }
 
-
 # Deploy VNETS with Default Subnets
 
 module "vnet_region1" {
@@ -97,93 +96,17 @@ module "bastion_region1" {
 
 }
 
-# Deploy VM for DC
+# Log Analytics Workspace
 
-module "create_dc1_region1" {
-  source = "../../../TFmodules/avset_compute_dc"
+module "log_analytics" {
+  source = "../../../TFmodules/analytics"
 
-  resource_group_name          = azurerm_resource_group.region1.name
-  location                     = azurerm_resource_group.region1.location
-  vnet_subnet_id               = module.vnet_region1.default_subnet_id
-
-  tags                           = var.tags
-  compute_hostname_prefix        = "DC-${var.region1_name}"
-  compute_instance_count         = 1
-
-  vm_size                        = "Standard_D2_v2"
-  os_publisher                   = var.os_publisher
-  os_offer                       = var.os_offer
-  os_sku                         = var.os_sku
-  os_version                     = var.os_version
-  storage_account_type           = var.storage_account_type
-  compute_boot_volume_size_in_gb = var.compute_boot_volume_size_in_gb
-  admin_username                 = var.admin_username
-  admin_password                 = var.admin_password
-  enable_accelerated_networking  = var.enable_accelerated_networking
-  boot_diag_SA_endpoint          = var.boot_diag_SA_endpoint
-  create_data_disk               = 1
-  assign_bepool                  = 1
-  static_ip_address              = "10.1.1.200"
-  outbound_backendpool_id        = data.azurerm_lb_backend_address_pool.lb.id
+  resource_group_name  = azurerm_resource_group.region1.name
+  location             = var.region1_loc
+  workspace_name       = "region1workspace"
+  sku                  = "PerGB2018"
 
 }
-
-# module "create_dc2_region1" {
-#   source = "../../../TFmodules/avset_compute_dc"
-
-#   resource_group_name          = azurerm_resource_group.region1.name
-#   location                     = azurerm_resource_group.region1.location
-#   vnet_subnet_id               = module.vnet_region1.default_subnet_id
-
-#   tags                           = var.tags
-#   compute_hostname_prefix        = "DC-${var.region1_name}-2"
-#   compute_instance_count         = 1
-
-#   vm_size                        = "Standard_D2_v2"
-#   os_publisher                   = var.os_publisher
-#   os_offer                       = var.os_offer
-#   os_sku                         = var.os_sku
-#   os_version                     = var.os_version
-#   storage_account_type           = var.storage_account_type
-#   compute_boot_volume_size_in_gb = var.compute_boot_volume_size_in_gb
-#   admin_username                 = var.admin_username
-#   admin_password                 = var.admin_password
-#   enable_accelerated_networking  = var.enable_accelerated_networking
-#   boot_diag_SA_endpoint          = var.boot_diag_SA_endpoint
-#   create_data_disk               = 1
-#   assign_bepool                  = 0
-#   static_ip_address              = "10.1.1.201"
-
-# }
-
-
-# module "create_windowsserver_region2" {
-#   source = "../../../TFmodules/compute"
-
-#   resource_group_name          = azurerm_resource_group.region2.name
-#   location                     = azurerm_resource_group.region2.location
-#   vnet_subnet_id               = module.vnet_region2.default_subnet_id
-
-#   tags                           = var.tags
-#   compute_hostname_prefix        = "DC-${var.region2_name}"
-#   compute_instance_count         = 1
-
-#   vm_size                        = "Standard_D2_v2"
-#   os_publisher                   = var.os_publisher
-#   os_offer                       = var.os_offer
-#   os_sku                         = var.os_sku
-#   os_version                     = var.os_version
-#   storage_account_type           = var.storage_account_type
-#   compute_boot_volume_size_in_gb = var.compute_boot_volume_size_in_gb
-#   admin_username                 = var.admin_username
-#   admin_password                 = var.admin_password
-#   enable_accelerated_networking  = var.enable_accelerated_networking
-#   boot_diag_SA_endpoint          = var.boot_diag_SA_endpoint
-#   create_public_ip               = 0
-#   create_data_disk               = 1
-#   assign_bepool                  = 0
-#   create_av_set                  = 1
-# }
 
 # LB for Outbound Access
 
@@ -193,7 +116,7 @@ module "outbound_lb_region1" {
   lbname                         = "lb-outbound-only"
   location                       = azurerm_resource_group.region1.location
   rg_name                        = azurerm_resource_group.region1.name
-  # zones                          = "1,2"
+  zones                          = "1, 2"
   subnetName                     = module.vnet_region1.default_subnet_name
   core_vnet_name                 = module.vnet_region1.vnet_name
   core_rg_name                   = azurerm_resource_group.region1.name

@@ -160,8 +160,8 @@ resource "azurerm_virtual_machine_extension" "joindomain" {
 
   settings = <<SETTINGS
       {
-        "Name": "EXAMPLE.COM",
-        "User": "EXAMPLE.COM\\azureuser",
+        "Name": "${var.domain_name}",
+        "User": "${var.domain_name}\\${var.admin_username}",
         "Restart": "true",
         "Options": "3"
       }
@@ -169,7 +169,7 @@ resource "azurerm_virtual_machine_extension" "joindomain" {
 
   protected_settings = <<PROTECTED_SETTINGS
     {
-      "Password": "YourPasswordHere"
+      "Password": "${var.admin_password}"
     }
 PROTECTED_SETTINGS
 }

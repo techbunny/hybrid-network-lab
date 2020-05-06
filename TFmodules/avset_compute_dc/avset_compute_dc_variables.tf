@@ -82,3 +82,22 @@ variable "static_ip_address" {
 variable "outbound_backendpool_id" {
 
 }
+
+
+# DSC Variables
+
+
+variable "dsc_key" {
+  
+}
+
+variable "dsc_endpoint" {
+  
+}
+
+variable dsc_config {
+}
+
+variable dsc_mode {
+  default = "applyAndAutoCorrect"
+}

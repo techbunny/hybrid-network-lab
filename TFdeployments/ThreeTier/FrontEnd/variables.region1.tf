@@ -88,6 +88,7 @@ variable "dsc_endpoint" {
 }
 
 variable dsc_config {
+  default = "blank"
 }
 
 variable dsc_mode {

@@ -28,7 +28,15 @@ variable dsc_mode {
   default = "applyAndAutoCorrect"
 }
 
+# Domain Join Variables
 
+variable domain_name {
+
+}
+
+variable domain_user {
+
+}
 
 
 # VM Variables
@@ -119,4 +127,8 @@ variable "assign_bepool" {
 
 variable "vmss_name" {
 
+}
+
+variable "health_probe_id" {
+  
 }

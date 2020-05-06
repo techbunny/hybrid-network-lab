@@ -97,3 +97,44 @@ resource "azurerm_network_interface_backend_address_pool_association" "outbound"
   ip_configuration_name   = "ipconfig${count.index}"
   backend_address_pool_id = var.outbound_backendpool_id
 }
+
+
+resource "azurerm_virtual_machine_extension" "dsc" {
+  count = var.compute_instance_count
+  name                 = "DSConboard"
+  virtual_machine_id   = element(azurerm_windows_virtual_machine.compute.*.id, count.index)
+  publisher            = "Microsoft.Powershell"
+  type                 = "DSC"
+  type_handler_version = "2.80"
+
+  settings = <<SETTINGS
+        {
+            "WmfVersion": "latest",
+            "Privacy": {
+                "DataCollection": ""
+            },
+            "Properties": {
+                "RegistrationKey": {
+                  "UserName": "PLACEHOLDER_DONOTUSE",
+                  "Password": "PrivateSettingsRef:registrationKeyPrivate"
+                },
+                "RegistrationUrl": "${var.dsc_endpoint}",
+                "NodeConfigurationName": "${var.dsc_config}",
+                "ConfigurationMode": "${var.dsc_mode}",
+                "ConfigurationModeFrequencyMins": 15,
+                "RefreshFrequencyMins": 30,
+                "RebootNodeIfNeeded": false,
+                "ActionAfterReboot": "continueConfiguration",
+                "AllowModuleOverwrite": false
+            }
+        }
+    SETTINGS
+
+  protected_settings = <<PROTECTED_SETTINGS
+    {
+      "Items": {
+        "registrationKeyPrivate" : "${var.dsc_key}"
+      }
+    }
+PROTECTED_SETTINGS
+}

@@ -22,6 +22,8 @@ resource "azurerm_windows_virtual_machine_scale_set" "compute" {
   instances           = 3
   admin_username      = var.admin_username
   admin_password      = var.admin_password
+  upgrade_mode        = "Automatic"
+  health_probe_id     = var.health_probe_id
 
   source_image_reference {
     publisher = var.os_publisher
@@ -37,6 +39,18 @@ resource "azurerm_windows_virtual_machine_scale_set" "compute" {
 
   }
 
+  automatic_os_upgrade_policy {
+    disable_automatic_rollback = true
+    enable_automatic_os_upgrade = true
+  }
+
+  rolling_upgrade_policy {
+    max_batch_instance_percent = "50"
+    max_unhealthy_instance_percent = "50"
+    max_unhealthy_upgraded_instance_percent = "50"
+    pause_time_between_batches = "PT10M"
+  }
+
   boot_diagnostics {
     storage_account_uri = module.create_boot_sa.boot_diagnostics_account_endpoint
   }
@@ -44,7 +58,6 @@ resource "azurerm_windows_virtual_machine_scale_set" "compute" {
   network_interface {
     name    = "${var.compute_hostname_prefix}-nic" 
     primary = true
-    # network_security_group_id = 
 
     ip_configuration {
       name                          = "ipconfig"
@@ -114,4 +127,28 @@ SETTINGS
     }
 PROTECTED_SETTINGS
 
+}
+
+resource "azurerm_virtual_machine_scale_set_extension" "joindomain" {
+  count = var.compute_instance_count
+  name                 = "joindomain" 
+  virtual_machine_scale_set_id   = azurerm_windows_virtual_machine_scale_set.compute.id
+  publisher            = "Microsoft.Compute"
+  type                 = "JsonADDomainExtension"
+  type_handler_version = "1.3"
+
+  settings = <<SETTINGS
+      {
+        "Name": "${var.domain_name}",
+        "User": "${var.domain_name}\\${var.admin_username}",
+        "Restart": "true",
+        "Options": "3"
+      }
+    SETTINGS
+
+  protected_settings = <<PROTECTED_SETTINGS
+    {
+      "Password": "${var.admin_password}"
+    }
+PROTECTED_SETTINGS
 }
