@@ -88,15 +88,6 @@ variable "storage_account_type" {
 
 # DSC Variables
 
-
-variable "dsc_key" {
-  
-}
-
-variable "dsc_endpoint" {
-  
-}
-
 variable dsc_config {
   default = "blank"
 }

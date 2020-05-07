@@ -10,6 +10,7 @@ resource "azurerm_public_ip" "lb" {
   resource_group_name = var.core_rg_name
   allocation_method   = "Static"
   sku                 = "Standard"
+  # zones                = var.zones
 
 }
 
@@ -22,7 +23,7 @@ resource "azurerm_lb" "lb" {
   frontend_ip_configuration {
     name                 = "${var.lbname}-publicip"
     public_ip_address_id = azurerm_public_ip.lb.id
-    zones                = [var.zones]
+    # zones                = var.zones
   }
 }
 

@@ -10,6 +10,12 @@ resource "azurerm_resource_group" "rg_app" {
   tags     = var.tags     
 }
 
+data "azurerm_automation_account" "dsc" {
+  name                = "dscautomation"
+  resource_group_name = "${var.region_name}_core"
+}
+
+
 # Add Subnets to Core Networks in each Region
 
 data "azurerm_virtual_network" "region_core" {
@@ -61,8 +67,8 @@ module "web_server" {
   backendpool_id                   = module.web_lb.app_backendpool_id
   outbound_backendpool_id          = data.azurerm_lb_backend_address_pool.lb.id
   dsc_config                       = "IISInstall.localhost"
-  dsc_key                          = var.dsc_key
-  dsc_endpoint                     = var.dsc_endpoint
+  dsc_key                        = data.azurerm_automation_account.dsc.primary_key
+  dsc_endpoint                   = data.azurerm_automation_account.dsc.endpoint
   domain_name                      = "IMPERFECTLAB.COM"
   domain_user                      = "IMPERFECTLAB.COM\\sysadmin"
 
@@ -123,8 +129,8 @@ module "app_server" {
   backendpool_id                   = module.app_lb.app_backendpool_id
   outbound_backendpool_id          = data.azurerm_lb_backend_address_pool.lb.id
   dsc_config                       = "DiskAttach.localhost"
-  dsc_key                          = var.dsc_key
-  dsc_endpoint                     = var.dsc_endpoint
+  dsc_key                        = data.azurerm_automation_account.dsc.primary_key
+  dsc_endpoint                   = data.azurerm_automation_account.dsc.endpoint
   domain_name                      = "IMPERFECTLAB.COM"
   domain_user                      = "IMPERFECTLAB.COM\\sysadmin"
 
@@ -189,8 +195,8 @@ module "vmss_web_server" {
   outbound_backendpool_id          = data.azurerm_lb_backend_address_pool.lb.id
   health_probe_id                  = module.rules_probes.probe_id
   dsc_config                       = "IISInstall.localhost"
-  dsc_key                          = var.dsc_key
-  dsc_endpoint                     = var.dsc_endpoint
+  dsc_key                          = data.azurerm_automation_account.dsc.primary_key
+  dsc_endpoint                     = data.azurerm_automation_account.dsc.endpoint
   domain_name                      = "IMPERFECTLAB.COM"
   domain_user                      = "IMPERFECTLAB.COM\\sysadmin"
 

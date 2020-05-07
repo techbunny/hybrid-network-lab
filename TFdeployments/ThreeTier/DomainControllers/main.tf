@@ -1,14 +1,4 @@
-# resource "azurerm_resource_group" "region1" {
-#   name     = "${var.region1_name}_core"
-#   location = var.region1_loc
-#   tags     = var.tags     
-# }
-
-# resource "azurerm_resource_group" "region2" {
-#   name     = "${var.region2_name}_core"
-#   location = var.region2_loc
-#   tags     = var.tags     
-# }
+# Collect data from CoreInfra deployment
 
 data "azurerm_virtual_network" "region_core" {
   name                = "${var.region1_name}_vnet"
@@ -19,6 +9,11 @@ data "azurerm_subnet" "region_core" {
   name                 = "default"
   resource_group_name  = data.azurerm_virtual_network.region_core.resource_group_name
   virtual_network_name = data.azurerm_virtual_network.region_core.name
+}
+
+data "azurerm_automation_account" "dsc" {
+  name                = "dscautomation"
+  resource_group_name = "${var.region1_name}_core"
 }
 
 data "azurerm_lb" "lb" {
@@ -59,9 +54,9 @@ module "create_dc1_region1" {
   assign_bepool                  = 1
   static_ip_address              = "10.1.1.200"
   outbound_backendpool_id        = data.azurerm_lb_backend_address_pool.lb.id
-  dsc_config                       = "DC1config.localhost"
-  dsc_key                          = var.dsc_key
-  dsc_endpoint                     = var.dsc_endpoint
+  dsc_config                     = "DC1config.localhost"
+  dsc_key                        = data.azurerm_automation_account.dsc.primary_key
+  dsc_endpoint                   = data.azurerm_automation_account.dsc.endpoint
 
 }
 

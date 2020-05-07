@@ -123,7 +123,7 @@ resource "azurerm_virtual_machine_extension" "dsc" {
                 "ConfigurationMode": "${var.dsc_mode}",
                 "ConfigurationModeFrequencyMins": 15,
                 "RefreshFrequencyMins": 30,
-                "RebootNodeIfNeeded": false,
+                "RebootNodeIfNeeded": true,
                 "ActionAfterReboot": "continueConfiguration",
                 "AllowModuleOverwrite": false
             }
