@@ -8,33 +8,23 @@ module "create_boot_sa" {
   compute_hostname_prefix   = "winserver01"
 }
 
-resource "azurerm_availability_set" "compute" {
-  name                         = "${var.compute_hostname_prefix}-avset"
-  location                     = var.location
-  resource_group_name          = var.resource_group_name
-  platform_fault_domain_count  = 2
-  platform_update_domain_count = 2
-  managed                      = true
-  tags                         = var.tags
-}
 
 # Basic VM, Wit AVSet, Windows
 resource "azurerm_windows_virtual_machine" "compute" {
-  count                         = var.compute_instance_count
-  name                          = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}"
+  name                          = var.compute_hostname_prefix
   location                      = var.location
   resource_group_name           = var.resource_group_name
   size                          = var.vm_size
   admin_username                = var.admin_username
   admin_password                = var.admin_password
-  network_interface_ids         = [element(concat(azurerm_network_interface.compute.*.id), count.index)]
+  network_interface_ids         = [azurerm_network_interface.compute.id]
   # allow_extension_operations  = 
-  availability_set_id            = azurerm_availability_set.compute.id
+  availability_set_id            = var.avset_id
   tags                          = var.tags
   enable_automatic_updates      = true
 
   os_disk {
-    name              = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}-disk-OS"
+    name              = "${var.compute_hostname_prefix}-disk-OS"
     #create_option        = "FromImage"
     caching              = "ReadWrite"
     disk_size_gb      = var.compute_boot_volume_size_in_gb
@@ -55,8 +45,7 @@ resource "azurerm_windows_virtual_machine" "compute" {
 }
 
 resource "azurerm_managed_disk" "vm_data_disks" {
-    name                 = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}-disk-data-01"  
-    count                = var.create_data_disk * var.compute_instance_count
+    name                 = "${var.compute_hostname_prefix}-disk-data-01"  
     location             = var.location
     resource_group_name  = var.resource_group_name
     storage_account_type = var.storage_account_type
@@ -67,22 +56,20 @@ resource "azurerm_managed_disk" "vm_data_disks" {
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "vm_data_disks_attachment" {
-  managed_disk_id    = element(azurerm_managed_disk.vm_data_disks.*.id, count.index)
-  virtual_machine_id = element(azurerm_windows_virtual_machine.compute.*.id, count.index)
-  lun                = count.index
+  managed_disk_id    = azurerm_managed_disk.vm_data_disks.id
+  virtual_machine_id = azurerm_windows_virtual_machine.compute.id
+  lun = 10
   caching            = "None"
-  count = var.create_data_disk
 }
 
 resource "azurerm_network_interface" "compute" {
-  count                         = var.compute_instance_count
-  name                          = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}-nic"  
+  name                          = "${var.compute_hostname_prefix}-nic"  
   location                      = var.location
   resource_group_name           = var.resource_group_name
   enable_accelerated_networking = var.enable_accelerated_networking
 
   ip_configuration {
-    name                          = "ipconfig${count.index}"
+    name                          = "ipconfig"
     subnet_id                     = var.vnet_subnet_id
     private_ip_address_allocation = "Static"
     private_ip_address            = var.static_ip_address
@@ -92,17 +79,15 @@ resource "azurerm_network_interface" "compute" {
 }
 
 resource "azurerm_network_interface_backend_address_pool_association" "outbound" {
-  count                   = var.assign_bepool * var.compute_instance_count  
-  network_interface_id    = element(azurerm_network_interface.compute.*.id, count.index)
-  ip_configuration_name   = "ipconfig${count.index}"
+  network_interface_id    = azurerm_network_interface.compute.id
+  ip_configuration_name   = "ipconfig"
   backend_address_pool_id = var.outbound_backendpool_id
 }
 
 
 resource "azurerm_virtual_machine_extension" "dsc" {
-  count = var.compute_instance_count
   name                 = "DSConboard"
-  virtual_machine_id   = element(azurerm_windows_virtual_machine.compute.*.id, count.index)
+  virtual_machine_id   = azurerm_windows_virtual_machine.compute.id
   publisher            = "Microsoft.Powershell"
   type                 = "DSC"
   type_handler_version = "2.80"

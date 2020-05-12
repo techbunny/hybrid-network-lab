@@ -112,11 +112,15 @@ resource "azurerm_network_interface_backend_address_pool_association" "outbound"
 
 resource "azurerm_virtual_machine_extension" "dsc" {
   count = var.compute_instance_count
-  name                 = "TestDSC"
+  name                 = "DSCOnboarding"
   virtual_machine_id   = element(azurerm_virtual_machine.compute.*.id, count.index)
   publisher            = "Microsoft.Powershell"
   type                 = "DSC"
   type_handler_version = "2.80"
+  depends_on                   = [
+      module.create_datadisks
+      ]
+
 
   settings = <<SETTINGS
         {
@@ -134,7 +138,7 @@ resource "azurerm_virtual_machine_extension" "dsc" {
                 "ConfigurationMode": "${var.dsc_mode}",
                 "ConfigurationModeFrequencyMins": 15,
                 "RefreshFrequencyMins": 30,
-                "RebootNodeIfNeeded": false,
+                "RebootNodeIfNeeded": true,
                 "ActionAfterReboot": "continueConfiguration",
                 "AllowModuleOverwrite": false
             }
@@ -157,6 +161,9 @@ resource "azurerm_virtual_machine_extension" "joindomain" {
   publisher            = "Microsoft.Compute"
   type                 = "JsonADDomainExtension"
   type_handler_version = "1.3"
+  depends_on                   = [
+      module.create_datadisks
+      ]
 
   settings = <<SETTINGS
       {

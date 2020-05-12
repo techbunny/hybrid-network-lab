@@ -1,13 +1,13 @@
 resource "azurerm_resource_group" "region1" {
   name     = "${var.region1_name}_core"
   location = var.region1_loc
-  tags     = var.tags     
+  tags     = var.tags
 }
 
 resource "azurerm_resource_group" "region2" {
   name     = "${var.region2_name}_core"
   location = var.region2_loc
-  tags     = var.tags     
+  tags     = var.tags
 }
 
 # Create Proximity Placement Groups
@@ -42,12 +42,13 @@ module "vnet_region1" {
   resource_group_name = azurerm_resource_group.region1.name
   location            = azurerm_resource_group.region1.location
 
-  vnet_name          = "${var.region1_name}_vnet"
-  address_space      = "10.1.0.0/16"
+  vnet_name             = "${var.region1_name}_vnet"
+  address_space         = "10.1.0.0/16"
   default_subnet_prefix = "10.1.1.0/24"
-  dns_servers           = [
-      "10.1.1.200",
-      "168.63.129.16"
+  dns_servers = [
+    "10.1.1.200",
+    "10.1.1.201",
+    "168.63.129.16"
   ]
 }
 
@@ -57,10 +58,10 @@ module "vnet_region2" {
   resource_group_name = azurerm_resource_group.region2.name
   location            = azurerm_resource_group.region2.location
 
-  vnet_name          = "${var.region2_name}_vnet"
-  address_space      = "10.2.0.0/16"
+  vnet_name             = "${var.region2_name}_vnet"
+  address_space         = "10.2.0.0/16"
   default_subnet_prefix = "10.2.1.0/24"
-  dns_servers           = [
+  dns_servers = [
     "168.63.129.16"
   ]
 }
@@ -82,11 +83,11 @@ module "peering" {
 
   resource_group_nameA = azurerm_resource_group.region1.name
   resource_group_nameB = azurerm_resource_group.region2.name
-  netA_name      = module.vnet_region1.vnet_name
-  netA_id        = module.vnet_region1.vnet_id
-  netB_name      = module.vnet_region2.vnet_name
-  netB_id        = module.vnet_region2.vnet_id
-  
+  netA_name            = module.vnet_region1.vnet_name
+  netA_id              = module.vnet_region1.vnet_id
+  netB_name            = module.vnet_region2.vnet_name
+  netB_id              = module.vnet_region2.vnet_id
+
 }
 
 # Bastion Host
@@ -106,10 +107,10 @@ module "bastion_region1" {
 module "log_analytics" {
   source = "../../../TFmodules/analytics"
 
-  resource_group_name  = azurerm_resource_group.region1.name
-  location             = var.region1_loc
-  workspace_name       = "region1workspace"
-  sku                  = "PerGB2018"
+  resource_group_name = azurerm_resource_group.region1.name
+  location            = var.region1_loc
+  workspace_name      = "region1workspace"
+  sku                 = "PerGB2018"
 
 }
 
@@ -118,14 +119,14 @@ module "log_analytics" {
 module "outbound_lb_region1" {
   source = "../../../TFmodules/loadbalancer/lb_external"
 
-  lbname                         = "lb-outbound-only"
-  location                       = azurerm_resource_group.region1.location
-  rg_name                        = azurerm_resource_group.region1.name
+  lbname   = "lb-outbound-only"
+  location = azurerm_resource_group.region1.location
+  rg_name  = azurerm_resource_group.region1.name
   # zones                          = ["1","2"]
-  subnetName                     = module.vnet_region1.default_subnet_name
-  core_vnet_name                 = module.vnet_region1.vnet_name
-  core_rg_name                   = azurerm_resource_group.region1.name
-  compute_hostname_prefix        = "${azurerm_resource_group.region1.name}-outbound"
+  subnetName              = module.vnet_region1.default_subnet_name
+  core_vnet_name          = module.vnet_region1.vnet_name
+  core_rg_name            = azurerm_resource_group.region1.name
+  compute_hostname_prefix = "${azurerm_resource_group.region1.name}-outbound"
 
 
 }
@@ -146,11 +147,11 @@ module "DSC_config" {
   location = azurerm_resource_group.region1.location
   rg_name  = azurerm_resource_group.region1.name
 
-  domain_name                    = "IMPERFECTLAB.COM"
-  domain_user                    = "IMPERFECTLAB.COM\\sysadmin"
-  admin_password                 = var.admin_password
-  admin_username                 = var.admin_username
-  domain_NetbiosName             = "IMPERFECTLAB"
+  domain_name        = "IMPERFECTLAB.COM"
+  domain_user        = "IMPERFECTLAB.COM\\sysadmin"
+  admin_password     = var.admin_password
+  admin_username     = var.admin_username
+  domain_NetbiosName = "IMPERFECTLAB"
 
 }
 

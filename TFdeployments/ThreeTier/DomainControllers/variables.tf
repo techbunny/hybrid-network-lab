@@ -18,19 +18,19 @@ variable "subscription_id" {
 # Core Infra Variables
 
 variable "region1_loc" {
-    default = "eastus"
+  default = "eastus"
 }
 
 variable "region2_loc" {
-    default = "eastus2"
+  default = "eastus2"
 }
 
 variable "region1_name" {
-    default = "RegionA"
+  default = "RegionA"
 }
 
 variable "region2_name" {
-    default = "RegionB"
+  default = "RegionB"
 }
 
 variable "tags" {
@@ -38,7 +38,7 @@ variable "tags" {
   type        = map(string)
 
   default = {
-    owner       = "jcroth"
+    owner = "jcroth"
   }
 }
 
@@ -84,7 +84,6 @@ variable "admin_password" {
 variable "storage_account_type" {
   default = "Standard_LRS"
 }
-
 
 # DSC Variables
 

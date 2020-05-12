@@ -91,10 +91,13 @@ resource "azurerm_windows_virtual_machine_scale_set" "compute" {
 
 resource "azurerm_virtual_machine_scale_set_extension" "compute" {
     virtual_machine_scale_set_id = azurerm_windows_virtual_machine_scale_set.compute.id
-    name                         = "TestDCS"
+    name                         = "DSCOnboarding"
     publisher                    = "Microsoft.PowerShell"
     type                         = "DSC"
     type_handler_version         = "2.80"
+    depends_on                   = [
+      azurerm_windows_virtual_machine_scale_set.compute
+      ]
 
     settings = <<SETTINGS
     {
@@ -112,7 +115,7 @@ resource "azurerm_virtual_machine_scale_set_extension" "compute" {
             "ConfigurationMode": "${var.dsc_mode}",
             "ConfigurationModeFrequencyMins": 15,
             "RefreshFrequencyMins": 30,
-            "RebootNodeIfNeeded": false,
+            "RebootNodeIfNeeded": true,
             "ActionAfterReboot": "continueConfiguration",
             "AllowModuleOverwrite": false
         }
@@ -136,6 +139,9 @@ resource "azurerm_virtual_machine_scale_set_extension" "joindomain" {
   publisher            = "Microsoft.Compute"
   type                 = "JsonADDomainExtension"
   type_handler_version = "1.3"
+  depends_on                   = [
+      azurerm_windows_virtual_machine_scale_set.compute
+      ]
 
   settings = <<SETTINGS
       {

@@ -1,8 +1,0 @@
-# Get the ID of the DSC node
-Get-AzAutomationDscNode -ResourceGroupName 'RegionA_core' -AutomationAccountName 'dscautomation' -Name 'web-RegionA0-01'
-
-# Get an array of status reports for the DSC node
-$reports = Get-AzAutomationDscNodeReport -ResourceGroupName 'MyResourceGroup' -AutomationAccountName 'myAutomationAccount' -NodeId $node.Id
-
-# Display the most recent report
-$reports[0]

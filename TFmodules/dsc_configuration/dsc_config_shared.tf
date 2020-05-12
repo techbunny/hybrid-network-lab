@@ -22,3 +22,4 @@ resource "azurerm_automation_module" "storage" {
     uri = "https://psg-prod-eastus.azureedge.net/packages/xstorage.3.4.0.nupkg"
   }
 }
+

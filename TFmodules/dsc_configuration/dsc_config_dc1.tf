@@ -25,6 +25,14 @@ resource "azurerm_automation_credential" "safemode" {
 
 }
 
+resource "azurerm_automation_credential" "domainlogin" {
+  name                    = "domainlogin"
+  resource_group_name     = var.rg_name
+  automation_account_name = data.azurerm_automation_account.dsc.name
+  username                = "sysadmin@imperfectlab.com"
+  password                = var.admin_password
+
+}
 
 resource "azurerm_automation_dsc_configuration" "dsc_dc1" {
   name                    = "DC1config"

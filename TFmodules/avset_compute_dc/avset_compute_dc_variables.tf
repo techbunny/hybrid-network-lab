@@ -13,9 +13,9 @@ variable "tags" {
 variable "compute_hostname_prefix" {
   description = "Prefix for naming of each VM specific resource"
 }
-variable "compute_instance_count" {
-  description = "Application instance count"
-}
+# variable "compute_instance_count" {
+#   description = "Application instance count"
+# }
 
 
 variable "vm_size" {
@@ -67,12 +67,12 @@ variable "public_ip_address_allocation" {
 variable "ip_sku" {
     default = "Standard"
 }
-variable "create_data_disk" {
+# variable "create_data_disk" {
 
-}
-variable "assign_bepool" {
+# }
+# variable "assign_bepool" {
 
-}
+# }
 
 variable "static_ip_address" {
 
@@ -81,6 +81,11 @@ variable "static_ip_address" {
 
 variable "outbound_backendpool_id" {
 
+}
+
+
+variable "avset_id" {
+  
 }
 
 
