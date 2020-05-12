@@ -15,5 +15,13 @@ After this deployment is complete, it is necessary to navigate to the DSC state 
 
 All deployments will to have a terraform.tfvars file or other mechanism to provide the tenant and subscription IDs, as well as the default admin password for VMs.  
 
+## To Do
+
+1. Improve password management for domain setup.
+2. Fix static networking.
+3. Fix DNS order on 2nd domain controller.
+
+
+
 
 
