@@ -49,6 +49,7 @@ module "create_dc1_region1" {
   vnet_subnet_id      = data.azurerm_subnet.region_core.id
   avset_id            = azurerm_availability_set.compute.id
 
+
   tags                    = var.tags
   compute_hostname_prefix = "DC-${var.region1_name}-01"
 

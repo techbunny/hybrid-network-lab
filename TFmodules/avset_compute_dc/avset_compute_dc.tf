@@ -18,7 +18,6 @@ resource "azurerm_windows_virtual_machine" "compute" {
   admin_username                = var.admin_username
   admin_password                = var.admin_password
   network_interface_ids         = [azurerm_network_interface.compute.id]
-  # allow_extension_operations  = 
   availability_set_id            = var.avset_id
   tags                          = var.tags
   enable_automatic_updates      = true
@@ -90,7 +89,10 @@ resource "azurerm_virtual_machine_extension" "dsc" {
   virtual_machine_id   = azurerm_windows_virtual_machine.compute.id
   publisher            = "Microsoft.Powershell"
   type                 = "DSC"
-  type_handler_version = "2.80"
+  type_handler_version = "2.80"  
+  depends_on                   = [
+      azurerm_virtual_machine_data_disk_attachment.vm_data_disks_attachment
+      ]
 
   settings = <<SETTINGS
         {

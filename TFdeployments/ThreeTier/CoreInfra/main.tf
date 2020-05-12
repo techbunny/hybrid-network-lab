@@ -122,7 +122,6 @@ module "outbound_lb_region1" {
   lbname   = "lb-outbound-only"
   location = azurerm_resource_group.region1.location
   rg_name  = azurerm_resource_group.region1.name
-  # zones                          = ["1","2"]
   subnetName              = module.vnet_region1.default_subnet_name
   core_vnet_name          = module.vnet_region1.vnet_name
   core_rg_name            = azurerm_resource_group.region1.name

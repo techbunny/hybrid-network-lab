@@ -90,6 +90,8 @@ Node "localhost"
     {
         DomainName = "${var.domain_name}"
         Credential = $domainlogin
+        WaitForValidCredentials = $true
+        WaitTimeout = 600
 
         DependsOn  = '[WindowsFeature]RSAT_AD_PowerShell'
     }
