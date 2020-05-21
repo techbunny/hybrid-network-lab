@@ -5,13 +5,14 @@ module "create_boot_sa" {
   resource_group_name       = var.resource_group_name
   location                  = var.location
   tags                      = var.tags
-  compute_hostname_prefix   = "winserver01"
+  compute_hostname_prefix   = var.compute_hostname_prefix
 }
 
 
 # Basic VM, Wit AVSet, Windows
 resource "azurerm_windows_virtual_machine" "compute" {
-  name                          = var.compute_hostname_prefix
+  # name                          = var.compute_hostname_prefix
+  name                          = substr("${var.compute_hostname_prefix}", 0, 15)
   location                      = var.location
   resource_group_name           = var.resource_group_name
   size                          = var.vm_size
@@ -122,6 +123,30 @@ resource "azurerm_virtual_machine_extension" "dsc" {
       "Items": {
         "registrationKeyPrivate" : "${var.dsc_key}"
       }
+    }
+PROTECTED_SETTINGS
+}
+
+resource "azurerm_virtual_machine_extension" "monitoring" {
+  name                 = "MicrosoftMonitoringAgent" 
+  virtual_machine_id   = azurerm_windows_virtual_machine.compute.id
+  publisher            = "Microsoft.EnterpriseCloud.Monitoring"
+  type                 = "MicrosoftMonitoringAgent"
+  type_handler_version = "1.0"
+  depends_on                   = [
+      azurerm_windows_virtual_machine.compute
+      ]
+
+  settings = <<SETTINGS
+      {
+        "workspaceId": "${var.workspace_id}",
+        "stopOnMultipleConnections": "true"
+      }
+    SETTINGS
+
+  protected_settings = <<PROTECTED_SETTINGS
+    {
+      "workspaceKey": "${var.workspace_key}"
     }
 PROTECTED_SETTINGS
 }

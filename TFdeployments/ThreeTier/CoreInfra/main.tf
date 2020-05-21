@@ -62,19 +62,11 @@ module "vnet_region2" {
   address_space         = "10.2.0.0/16"
   default_subnet_prefix = "10.2.1.0/24"
   dns_servers = [
+    "10.2.1.200",
+    "10.1.1.200",
     "168.63.129.16"
   ]
 }
-
-# data "azurerm_lb" "lb" {
-#   name                = "lb-outbound-only"
-#   resource_group_name  = azurerm_resource_group.region1.name
-# }
-
-# data "azurerm_lb_backend_address_pool" "lb" {
-#   name            = "${azurerm_resource_group.region1.name}-outbound-pool"
-#   loadbalancer_id = data.azurerm_lb.lb.id
-# }
 
 # Peering between VNET1 and VNET2
 
@@ -102,6 +94,16 @@ module "bastion_region1" {
 
 }
 
+module "bastion_region2" {
+  source = "../../../TFmodules/bastion"
+
+  resource_group_name  = azurerm_resource_group.region2.name
+  virtual_network_name = module.vnet_region2.vnet_name
+  subnet_cidr          = "10.2.250.0/24"
+  location             = var.region2_loc
+
+}
+
 # Log Analytics Workspace
 
 module "log_analytics" {
@@ -109,7 +111,7 @@ module "log_analytics" {
 
   resource_group_name = azurerm_resource_group.region1.name
   location            = var.region1_loc
-  workspace_name      = "region1workspace"
+  workspace_name      = "${var.region1_name}-workspace"
   sku                 = "PerGB2018"
 
 }
@@ -126,6 +128,20 @@ module "outbound_lb_region1" {
   core_vnet_name          = module.vnet_region1.vnet_name
   core_rg_name            = azurerm_resource_group.region1.name
   compute_hostname_prefix = "${azurerm_resource_group.region1.name}-outbound"
+
+
+}
+
+module "outbound_lb_region2" {
+  source = "../../../TFmodules/loadbalancer/lb_external"
+
+  lbname   = "lb2-outbound-only"
+  location = azurerm_resource_group.region2.location
+  rg_name  = azurerm_resource_group.region2.name
+  subnetName              = module.vnet_region2.default_subnet_name
+  core_vnet_name          = module.vnet_region2.vnet_name
+  core_rg_name            = azurerm_resource_group.region2.name
+  compute_hostname_prefix = "${azurerm_resource_group.region2.name}-outbound"
 
 
 }

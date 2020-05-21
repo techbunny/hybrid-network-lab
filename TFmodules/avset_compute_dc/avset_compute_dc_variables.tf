@@ -106,3 +106,13 @@ variable dsc_config {
 variable dsc_mode {
   default = "applyAndAutoCorrect"
 }
+
+# Monitoring
+
+variable workspace_id {
+
+}
+
+variable workspace_key {
+  
+}

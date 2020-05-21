@@ -26,7 +26,7 @@ variable "tags" {
   type        = map(string)
 
   default = {
-    application = "PEX"
+    application = "testing"
   }
 }
 variable "jumpbox_instance_count" {
@@ -104,7 +104,7 @@ variable "kubernetes_client_secret" {
 # }
 
 # variable "netB_name" {
-    
+
 # }
 
 
@@ -113,5 +113,5 @@ variable "kubernetes_client_secret" {
 # }
 
 # variable "netB_id" {
-    
+
 # }

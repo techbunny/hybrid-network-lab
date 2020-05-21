@@ -18,19 +18,15 @@ variable "subscription_id" {
 # Core Infra Variables
 
 variable "region1_loc" {
-  default = "eastus"
 }
 
 variable "region2_loc" {
-  default = "eastus2"
 }
 
 variable "region1_name" {
-  default = "RegionA"
 }
 
 variable "region2_name" {
-  default = "RegionB"
 }
 
 variable "tags" {

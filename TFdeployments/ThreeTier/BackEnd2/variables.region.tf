@@ -1,4 +1,4 @@
-# Subscription Variables
+# Subscriptin Variables
 
 variable "tenant_id" {
 
@@ -15,38 +15,35 @@ variable "subscription_id" {
 
 # }
 
-# Core Infra Variables
+# Region Variables
 
-variable "region1_loc" {
-  default = "eastus2"
+variable "region_loc" {
 }
 
-variable "region2_loc" {
-  default = "centralus"
+variable "region_name" {
+}
+
+
+variable "region1_loc" {
 }
 
 variable "region1_name" {
-  default = "RegionEast2"
 }
 
-variable "region2_name" {
-  default = "RegionCentral"
-}
 
 variable "tags" {
   description = "ARM resource tags to any resource types which accept tags"
   type        = map(string)
 
   default = {
-    owner = "jcroth"
+    owner       = "jcroth"
   }
 }
 
+# Web Server Variables
 
-# Windows DC Variables
 
 variable "compute_boot_volume_size_in_gb" {
-  description = "Boot volume size of jumpbox instance"
   default     = 128
 }
 
@@ -85,6 +82,10 @@ variable "storage_account_type" {
   default = "Standard_LRS"
 }
 
+variable "backendpool_id" {
+  default = null
+}
+
 
 # DSC Variables
 
@@ -104,5 +105,3 @@ variable dsc_config {
 variable dsc_mode {
   default = "applyAndMonitor"
 }
-
-

@@ -158,3 +158,27 @@ resource "azurerm_virtual_machine_scale_set_extension" "joindomain" {
     }
 PROTECTED_SETTINGS
 }
+
+# resource "azurerm_virtual_machine_extension" "monitoring" {
+#   name                 = "MicrosoftMonitoringAgent" 
+#   virtual_machine_id   = azurerm_windows_virtual_machine_scale_set.compute.id
+#   publisher            = "Microsoft.EnterpriseCloud.Monitoring"
+#   type                 = "MicrosoftMonitoringAgent"
+#   type_handler_version = "1.0"
+#   depends_on                   = [
+#       azurerm_windows_virtual_machine_scale_set.compute
+#       ]
+
+#   settings = <<SETTINGS
+#       {
+#         "workspaceId": "${var.workspace_id}",
+#         "stopOnMultipleConnections": "true"
+#       }
+#     SETTINGS
+
+#   protected_settings = <<PROTECTED_SETTINGS
+#     {
+#       "workspaceKey": "${var.workspace_key}"
+#     }
+# PROTECTED_SETTINGS
+# }

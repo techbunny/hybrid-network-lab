@@ -18,11 +18,11 @@ variable "subscription_id" {
 # Core Infra Variables
 
 variable "region_loc" {
-    default = "eastus"
+  default = "eastus"
 }
 
 variable "region_name" {
-    default = "RegionA"
+  default = "RegionA"
 }
 
 variable "tags" {
@@ -30,7 +30,7 @@ variable "tags" {
   type        = map(string)
 
   default = {
-    owner       = "jcroth"
+    owner = "jcroth"
   }
 }
 
@@ -38,7 +38,7 @@ variable "tags" {
 
 
 variable "compute_boot_volume_size_in_gb" {
-  default     = 128
+  default = 128
 }
 
 variable "enable_accelerated_networking" {
@@ -80,11 +80,11 @@ variable "storage_account_type" {
 
 
 # variable "dsc_key" {
-  
+
 # }
 
 # variable "dsc_endpoint" {
-  
+
 # }
 
 variable dsc_config {
@@ -94,4 +94,6 @@ variable dsc_config {
 variable dsc_mode {
   default = "applyAndMonitor"
 }
+
+
 

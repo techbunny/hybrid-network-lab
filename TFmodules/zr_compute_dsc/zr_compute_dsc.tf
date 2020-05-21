@@ -18,7 +18,8 @@ module "create_boot_sa" {
 resource "azurerm_virtual_machine" "compute" {
 
   count                         = var.compute_instance_count
-  name                          = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}"
+  # name                          = substr("${var.compute_hostname_prefix}", 0, 15)
+  name                          = "${substr("${var.compute_hostname_prefix}", 0, 12)}-${format("%.02d",count.index + 1)}"
   location                      = var.location
   resource_group_name           = var.resource_group_name
   vm_size                       = var.vm_size
@@ -46,7 +47,8 @@ resource "azurerm_virtual_machine" "compute" {
   }
 
   os_profile {
-    computer_name  = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}"
+    # computer_name  = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}"
+    computer_name  = "${substr("${var.compute_hostname_prefix}", 0, 12)}-${format("%.02d",count.index + 1)}"
     admin_username = var.admin_username
     admin_password = var.admin_password
   }
@@ -180,3 +182,29 @@ resource "azurerm_virtual_machine_extension" "joindomain" {
     }
 PROTECTED_SETTINGS
 }
+
+resource "azurerm_virtual_machine_extension" "monitoring" {
+  name                 = "MicrosoftMonitoringAgent" 
+  count = var.compute_instance_count
+  virtual_machine_id   = element(azurerm_virtual_machine.compute.*.id, count.index)
+  publisher            = "Microsoft.EnterpriseCloud.Monitoring"
+  type                 = "MicrosoftMonitoringAgent"
+  type_handler_version = "1.0"
+  depends_on                   = [
+      azurerm_virtual_machine.compute
+      ]
+
+  settings = <<SETTINGS
+      {
+        "workspaceId": "${var.workspace_id}",
+        "stopOnMultipleConnections": "true"
+      }
+    SETTINGS
+
+  protected_settings = <<PROTECTED_SETTINGS
+    {
+      "workspaceKey": "${var.workspace_key}"
+    }
+PROTECTED_SETTINGS
+}
+

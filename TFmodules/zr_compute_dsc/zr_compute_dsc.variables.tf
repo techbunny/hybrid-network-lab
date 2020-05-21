@@ -28,6 +28,15 @@ variable dsc_mode {
   default = "applyAndAutoCorrect"
 }
 
+variable workspace_id {
+
+}
+
+variable workspace_key {
+  
+}
+
+
 # Domain Join Variables
 
 variable domain_name {

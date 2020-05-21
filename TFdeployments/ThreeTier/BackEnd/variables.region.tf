@@ -18,11 +18,16 @@ variable "subscription_id" {
 # Region Variables
 
 variable "region_loc" {
-    default = "eastus"
 }
 
 variable "region_name" {
-    default = "RegionA"
+}
+
+
+variable "region2_loc" {
+}
+
+variable "region2_name" {
 }
 
 
@@ -79,4 +84,24 @@ variable "storage_account_type" {
 
 variable "backendpool_id" {
   default = null
+}
+
+
+# DSC Variables
+
+
+# variable "dsc_key" {
+
+# }
+
+# variable "dsc_endpoint" {
+
+# }
+
+variable dsc_config {
+  default = "blank"
+}
+
+variable dsc_mode {
+  default = "applyAndMonitor"
 }
