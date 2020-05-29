@@ -1,28 +1,3 @@
-
-variable "location" {
-
-}
-
-variable "rg_name" {
-  
-}
-
-data "azurerm_automation_account" "dsc" {
-  name                = "dscautomation"
-  resource_group_name = var.rg_name
-  
-}
-
-resource "azurerm_automation_module" "compmgmt" {
-  name                    = "ComputerManagementdsc"
-  resource_group_name     = var.rg_name
-  automation_account_name = data.azurerm_automation_account.dsc.name
-
-  module_link {
-    uri = "https://psg-prod-eastus.azureedge.net/packages/computermanagementdsc.8.2.0.nupkg"
-  }
-}
-
 resource "azurerm_automation_module" "failover" {
   name                    = "xFailOverCluster"
   resource_group_name     = var.rg_name
@@ -50,16 +25,6 @@ resource "azurerm_automation_module" "storagedsc" {
 
   module_link {
     uri = "https://psg-prod-eastus.azureedge.net/packages/storagedsc.5.0.0.nupkg"
-  }
-}
-
-resource "azurerm_automation_module" "securitypolicy" {
-  name                    = "SecurityPolicydsc"
-  resource_group_name     = var.rg_name
-  automation_account_name = data.azurerm_automation_account.dsc.name
-
-  module_link {
-    uri = "https://psg-prod-eastus.azureedge.net/packages/securitypolicydsc.3.0.0-preview0002.nupkg"
   }
 }
 

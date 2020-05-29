@@ -156,7 +156,7 @@ module "create_dc3_region2" {
   avset_id            = azurerm_availability_set.compute2.id
 
   tags                    = var.tags
-  compute_hostname_prefix = "DC-03-${var.region2_name}"
+  compute_hostname_prefix = "DC-05-${var.region2_name}"
 
   vm_size                        = "Standard_D2_v2"
   os_publisher                   = var.os_publisher

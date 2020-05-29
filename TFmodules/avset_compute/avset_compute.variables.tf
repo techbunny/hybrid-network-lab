@@ -58,7 +58,7 @@ variable "boot_diag_SA_endpoint" {
 
 }
 variable "backendpool_id" {
-  default = "0"
+
 }
 
 variable "public_ip_address_allocation" {
