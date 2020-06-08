@@ -25,3 +25,7 @@ variable "default_subnet_prefix"  {
 
 }
 
+variable "dns_servers" {
+  
+}
+

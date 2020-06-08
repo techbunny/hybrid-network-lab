@@ -31,6 +31,14 @@ output "app_backendpool_id" {
     value = azurerm_lb_backend_address_pool.lb.id
 }
 
+output "loadbalancer_id" {
+  value = azurerm_lb.lb.id
+}
+
+output "frontend_name" {
+  value = azurerm_lb.lb.frontend_ip_configuration[0].name
+}
+
 
 # Variables for LB Module
 

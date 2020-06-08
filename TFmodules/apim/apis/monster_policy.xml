@@ -1,0 +1,66 @@
+<!--
+    IMPORTANT:
+    - Policy elements can appear only within the <inbound>, <outbound>, <backend> section elements.
+    - To apply a policy to the incoming request (before it is forwarded to the backend service), place a corresponding policy element within the <inbound> section element.
+    - To apply a policy to the outgoing response (before it is sent back to the caller), place a corresponding policy element within the <outbound> section element.
+    - To add a policy, place the cursor at the desired insertion point and select a policy from the sidebar.
+    - To remove a policy, delete the corresponding policy statement from the policy document.
+    - Position the <base> element within a section element to inherit all policies from the corresponding section element in the enclosing scope.
+    - Remove the <base> element to prevent inheriting policies from the corresponding section element in the enclosing scope.
+    - Policies are applied in the order of their appearance, from the top down.
+    - Comments within policy elements are not supported and may disappear. Place your comments between policy elements or at a higher level scope.
+-->
+<policies>
+    <inbound>
+        <!-- Authenticate APIM with Blob Storage -->
+        <set-header name="x-ms-version" exists-action="override">
+            <value>2019-02-02</value>
+        </set-header>
+        <authentication-managed-identity resource="https://storage.azure.com/" />
+        <!-- Maybe you want to send blobs to different storage accounts:  
+        <authentication-managed-identity resource="@{
+        string imageName = (string)context.Variables["ImageName"]; 
+
+        if(imageName.ToLower().Contains("customerTwo")) {
+            return "https://customertwostorageaccount.blob.core.windows.net/"; 
+        } else { 
+            return "https://customeronestorageaccount.blob.core.windows.net/"; 
+        }
+        }" /> -->
+        <!-- Set Block Blob as blob type -->
+        <set-header name="x-ms-blob-type" exists-action="append">
+            <value>BlockBlob</value>
+        </set-header>
+        <set-variable name="Base64EncodedSnapshot" value="@{
+        JObject requestBody = context.Request.Body.As&lt;JObject&gt;(preserveContent: true); 
+            JToken imageNameJtoken = requestBody.GetValue(&#34;Base64EncodedSnapshot&#34;); 
+            return imageNameJtoken.ToString(); 
+        }" />
+        <rewrite-uri template="@{ 
+            JObject requestBody = context.Request.Body.As&lt;JObject&gt;(preserveContent: true); 
+
+            string SourceIp = requestBody.GetValue(&#34;SourceIp&#34;).ToString();
+            string Id = requestBody.GetValue(&#34;Id&#34;).ToString(); 
+            string ImageName = requestBody.GetValue(&#34;ImageName&#34;).ToString(); 
+
+            string fullyQualifiedPath = SourceIp + &#34;&#47;&#34; + Id + &#34;&#46;&#34; + &#34;jpeg&#34;;
+            
+            return &#34;images&#47;&#34; + fullyQualifiedPath;
+        }" 
+        />
+        <set-body>@{
+            return Convert.FromBase64String((string)context.Variables["Base64EncodedSnapshot"]); 
+        }</set-body>
+        <base />
+        
+    </inbound>
+    <backend>
+        <base />
+    </backend>
+    <outbound>
+        <base />
+    </outbound>
+    <on-error>
+        <base />
+    </on-error>
+</policies>

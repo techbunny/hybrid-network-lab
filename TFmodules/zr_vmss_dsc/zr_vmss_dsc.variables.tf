@@ -10,7 +10,44 @@ variable "region_name" {
 
 }
 
+# DSC Variables
 
+
+variable "dsc_key" {
+  
+}
+
+variable "dsc_endpoint" {
+  
+}
+
+variable dsc_config {
+}
+
+variable dsc_mode {
+  default = "applyAndAutoCorrect"
+}
+
+variable workspace_id {
+
+}
+
+variable workspace_key {
+  
+}
+
+# Domain Join Variables
+
+variable domain_name {
+
+}
+
+variable domain_user {
+
+}
+
+
+# VM Variables
 
 variable "compute_boot_volume_size_in_gb" {
   description = "Boot volume size of jumpbox instance"
@@ -88,11 +125,18 @@ variable "backendpool_id" {
   
 }
 
-variable "assign_bepool" {
-  
-}
-
 variable "outbound_backendpool_id" {
   
 }
 
+variable "assign_bepool" {
+  
+}
+
+variable "vmss_name" {
+
+}
+
+variable "health_probe_id" {
+  
+}

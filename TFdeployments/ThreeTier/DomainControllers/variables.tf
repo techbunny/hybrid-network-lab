@@ -1,9 +1,4 @@
-
-variable "rg_name_hubspoke" {
-}
-
-variable "location_hubspoke" {
-}
+# Subscription Variables
 
 variable "tenant_id" {
 
@@ -13,26 +8,38 @@ variable "subscription_id" {
 
 }
 
-variable "client_id" {
+# variable "client_id" {
 
+# }
+# variable "client_secret" {
+
+# }
+
+# Core Infra Variables
+
+variable "region1_loc" {
 }
-variable "client_secret" {
 
+variable "region2_loc" {
 }
 
+variable "region1_name" {
+}
+
+variable "region2_name" {
+}
 
 variable "tags" {
   description = "ARM resource tags to any resource types which accept tags"
   type        = map(string)
 
   default = {
-    application = "testing"
+    owner = "jcroth"
   }
 }
-variable "jumpbox_instance_count" {
-  description = "jumpbox instance count"
-  default     = 1
-}
+
+
+# Windows DC Variables
 
 variable "compute_boot_volume_size_in_gb" {
   description = "Boot volume size of jumpbox instance"
@@ -45,10 +52,6 @@ variable "enable_accelerated_networking" {
 
 variable "boot_diag_SA_endpoint" {
   default = "0"
-}
-
-variable "vm_size" {
-  default = "Standard_D2_V2"
 }
 
 variable "os_offer" {
@@ -78,40 +81,14 @@ variable "storage_account_type" {
   default = "Standard_LRS"
 }
 
-# AKS Variables
+# DSC Variables
 
-variable "prefix" {
-  default = "xyz-rg-aks"
+variable dsc_config {
+  default = "blank"
 }
 
-variable "subnet_cidr" {
-  default = "172.21.128.0/18"
-}
-
-variable "kubernetes_client_id" {
-  default = "0"
-}
-
-variable "kubernetes_client_secret" {
-  default = "0"
+variable dsc_mode {
+  default = "applyAndMonitor"
 }
 
 
-# Peering Variables
-
-# variable "netA_name" {
-
-# }
-
-# variable "netB_name" {
-
-# }
-
-
-# variable "netA_id" {
-
-# }
-
-# variable "netB_id" {
-
-# }

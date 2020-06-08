@@ -11,12 +11,12 @@ resource "azurerm_resource_group" "rg_data" {
 
 data "azurerm_automation_account" "dsc" {
   name                = "dscautomation"
-  resource_group_name = "${var.region_name}_core"
+  resource_group_name = "${var.region1_name}_core"
 }
 
 data "azurerm_log_analytics_workspace" "core" {
-  name = "${var.region_name}-workspace"
-  resource_group_name = "${var.region_name}_core"
+  name = "${var.region1_name}-workspace"
+  resource_group_name = "${var.region1_name}_core"
 }
 
 
@@ -31,14 +31,14 @@ resource "azurerm_subnet" "dataBE" {
   name                 = "data-subnet"
   resource_group_name  = data.azurerm_virtual_network.region_core.resource_group_name
   virtual_network_name = data.azurerm_virtual_network.region_core.name
-  address_prefix       = "10.1.6.0/24"
+  address_prefix       = "10.2.6.0/24"
 }
 
 
 # Create LB for App VMs
 
 data "azurerm_lb" "lb" {
-  name                = "lb-outbound-only"
+  name                = "lb2-outbound-only"
   resource_group_name = data.azurerm_virtual_network.region_core.resource_group_name
 }
 
@@ -54,8 +54,8 @@ module "sql_lb" {
   location    = azurerm_resource_group.rg_data.location
   region_name = azurerm_resource_group.rg_data.name
   subnetName              = azurerm_subnet.dataBE.name
-  core_vnet_name          = "${var.region_name}_vnet"
-  core_region_name        = "${var.region_name}_core"
+  core_vnet_name          = data.azurerm_virtual_network.region_core.name
+  core_region_name        = data.azurerm_virtual_network.region_core.resource_group_name
   compute_hostname_prefix = "app-${var.region_name}"
 
 
