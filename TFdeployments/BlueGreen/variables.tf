@@ -1,8 +1,8 @@
 
-variable "rg_name_hubspoke" {
+variable "rg_name" {
 }
 
-variable "location_hubspoke" {
+variable "location" {
 }
 
 variable "tenant_id" {
@@ -26,7 +26,7 @@ variable "tags" {
   type        = map(string)
 
   default = {
-    application = "PEX"
+    project = "bluegreen"
   }
 }
 variable "jumpbox_instance_count" {
@@ -96,22 +96,3 @@ variable "kubernetes_client_secret" {
   default = "0"
 }
 
-
-# Peering Variables
-
-# variable "netA_name" {
-
-# }
-
-# variable "netB_name" {
-    
-# }
-
-
-# variable "netA_id" {
-
-# }
-
-# variable "netB_id" {
-    
-# }
