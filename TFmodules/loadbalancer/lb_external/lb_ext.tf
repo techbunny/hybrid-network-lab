@@ -10,7 +10,6 @@ resource "azurerm_public_ip" "lb" {
   resource_group_name = var.core_rg_name
   allocation_method   = "Static"
   sku                 = "Standard"
-  # zones                = var.zones
 
 }
 
@@ -50,6 +49,10 @@ resource "azurerm_lb_outbound_rule" "lb" {
 
 output "vm_backendpool_id" {
     value = azurerm_lb_backend_address_pool.lb.id
+}
+
+output "lb_id" {
+  value = azurerm_lb.lb.id
 }
 
 

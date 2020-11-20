@@ -1,7 +1,8 @@
 resource "azurerm_lb_rule" "http" {
   resource_group_name            = var.rg_name
   loadbalancer_id                = var.lb_id
-  name                           = "http-LBRule"
+  name                           = var.http-LBRule
+  # name                           = "http-LBRule"
   protocol                       = "Tcp"
   frontend_port                  = 80
   backend_port                   = 80
@@ -14,10 +15,18 @@ resource "azurerm_lb_rule" "http" {
 resource "azurerm_lb_probe" "http" {
   resource_group_name            = var.rg_name
   loadbalancer_id                = var.lb_id
-  name                           = "http-probe"
+  name                           = var.http-probe
+  # name                           = "http-probe"
   port                           = 80
 }
 
+variable "http-probe" {
+
+}
+
+variable "http-LBRule" {
+
+}
 variable "rg_name" {
 
 }
