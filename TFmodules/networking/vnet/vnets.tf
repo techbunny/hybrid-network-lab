@@ -9,6 +9,11 @@ resource "azurerm_virtual_network" "vnet" {
   dns_servers         = var.dns_servers
   tags                = var.tags
 
+  ddos_protection_plan {
+    id     = var.ddos_plan_id
+    enable = true
+  }
+
 }
 
 resource "azurerm_subnet" "vnet" {
@@ -20,6 +25,18 @@ resource "azurerm_subnet" "vnet" {
   depends_on = [azurerm_virtual_network.vnet]
 }
 
+resource "azurerm_network_security_group" "nsg" {
+  name            = "${var.vnet_name}-${azurerm_subnet.vnet.name}-nsg" 
+  resource_group_name = var.resource_group_name
+  location            = var.location
+
+  tags = var.tags
+}
+
+resource "azurerm_subnet_network_security_group_association" "subnet" {
+  subnet_id                 = azurerm_subnet.vnet.id
+  network_security_group_id = azurerm_network_security_group.nsg.id
+}
 
 
 

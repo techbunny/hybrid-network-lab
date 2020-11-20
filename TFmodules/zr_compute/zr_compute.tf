@@ -18,7 +18,7 @@ module "create_boot_sa" {
 resource "azurerm_virtual_machine" "compute" {
 
   count                         = var.compute_instance_count
-  name                          = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}"
+  name                          = "${var.compute_hostname_prefix}-${var.vm_size}-${format("%.02d",count.index + 1)}"
   location                      = var.location
   resource_group_name           = var.resource_group_name
   vm_size                       = var.vm_size
@@ -38,7 +38,7 @@ resource "azurerm_virtual_machine" "compute" {
 }
 
   storage_os_disk {
-    name              = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}-disk-OS"
+    name              = "${var.compute_hostname_prefix}-${var.vm_size}-${format("%.02d",count.index + 1)}-disk-OS"
     create_option     = "FromImage"
     caching           = "ReadWrite"
     disk_size_gb      = 128
@@ -46,7 +46,7 @@ resource "azurerm_virtual_machine" "compute" {
   }
 
   os_profile {
-    computer_name  = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}"
+    computer_name  = "${var.compute_hostname_prefix}-${var.vm_size}-${format("%.02d",count.index + 1)}"
     admin_username = var.admin_username
     admin_password = var.admin_password
   }
@@ -82,7 +82,7 @@ module "create_datadisks" {
 
 resource "azurerm_network_interface" "compute" {
   count                         = var.compute_instance_count
-  name                          = "${var.compute_hostname_prefix}-${format("%.02d",count.index + 1)}-nic" 
+  name                          = "${var.compute_hostname_prefix}-${var.vm_size}-${format("%.02d",count.index + 1)}-nic" 
   location                      = var.location
   resource_group_name           = var.resource_group_name
   enable_accelerated_networking = var.enable_accelerated_networking
