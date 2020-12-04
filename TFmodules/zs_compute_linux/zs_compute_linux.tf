@@ -76,7 +76,7 @@ resource "azurerm_public_ip" "compute" {
   location                      = var.location
   resource_group_name           = var.resource_group_name
   allocation_method             = "Static"
-  zones                         = [(count.index % 2) + 1]
+  zones                         = [count.index + 1]
   sku                           = "Standard"
 
   tags = var.tags
