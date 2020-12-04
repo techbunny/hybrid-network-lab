@@ -29,7 +29,7 @@ variable "dns_servers" {
   
 }
 
-variable "ddos_plan_id" {
+# variable "ddos_plan_id" {
 
-}
+# }
 

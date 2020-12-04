@@ -6,10 +6,6 @@ variable "location" {
 
 }
 
-variable "zone" {
-
-}
-
 variable "compute_boot_volume_size_in_gb" {
   description = "Boot volume size of jumpbox instance"
   default     = 128

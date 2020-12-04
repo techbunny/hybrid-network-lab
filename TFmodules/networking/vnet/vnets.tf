@@ -9,10 +9,10 @@ resource "azurerm_virtual_network" "vnet" {
   dns_servers         = var.dns_servers
   tags                = var.tags
 
-  ddos_protection_plan {
-    id     = var.ddos_plan_id
-    enable = true
-  }
+  # ddos_protection_plan {
+  #   id     = var.ddos_plan_id
+  #   enable = true
+  # }
 
 }
 
@@ -20,7 +20,7 @@ resource "azurerm_subnet" "vnet" {
   name                 = "default"
   resource_group_name  = var.resource_group_name
   virtual_network_name = var.vnet_name
-  address_prefix      = var.default_subnet_prefix
+  address_prefixes     = [var.default_subnet_prefix]
 
   depends_on = [azurerm_virtual_network.vnet]
 }

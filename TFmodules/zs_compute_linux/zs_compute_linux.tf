@@ -19,15 +19,15 @@ resource "random_string" "compute" {
 resource "azurerm_linux_virtual_machine" "compute" {
 
   count                         = var.compute_instance_count
-  name                          = "${var.compute_hostname_prefix}-z${var.zone}-${random_string.compute.result}-${format("%.02d",count.index + 1)}"
+  name                          = "${var.compute_hostname_prefix}-z${count.index + 1}-${random_string.compute.result}-${format("%.02d",count.index + 1)}"
   location                      = var.location
   resource_group_name           = var.resource_group_name
   admin_username                = var.admin_username
   size                          = var.vm_size
   network_interface_ids         = [element(concat(azurerm_network_interface.compute.*.id), count.index)]
   # proximity_placement_group_id  = data.azurerm_proximity_placement_group.region_ppg[count.index].id 
-  # zone                          = "${(count.index % 2) + 1}"
-  zone                          = var.zone                                              
+  zone                          = count.index + 1
+                                          
   
   tags = var.tags  
 
@@ -55,7 +55,7 @@ resource "azurerm_linux_virtual_machine" "compute" {
 
 resource "azurerm_network_interface" "compute" {
   count                         = var.compute_instance_count
-  name                          = "${var.compute_hostname_prefix}-z${var.zone}-${random_string.compute.result}-${format("%.02d",count.index + 1)}-nic" 
+  name                          = "${var.compute_hostname_prefix}-z${count.index + 1}-${random_string.compute.result}-${format("%.02d",count.index + 1)}-nic" 
   location                      = var.location
   resource_group_name           = var.resource_group_name
   enable_accelerated_networking = var.enable_accelerated_networking
@@ -72,11 +72,11 @@ resource "azurerm_network_interface" "compute" {
 
 resource "azurerm_public_ip" "compute" {
   count                         = var.compute_instance_count
-  name                          = "${var.compute_hostname_prefix}-z${var.zone}-${random_string.compute.result}-${format("%.02d",count.index + 1)}-pip" 
+  name                          = "${var.compute_hostname_prefix}-z${count.index + 1}-${random_string.compute.result}-${format("%.02d",count.index + 1)}-pip" 
   location                      = var.location
   resource_group_name           = var.resource_group_name
   allocation_method             = "Static"
-  zones                         = [var.zone]
+  zones                         = [(count.index % 2) + 1]
   sku                           = "Standard"
 
   tags = var.tags
