@@ -5,10 +5,6 @@ resource "azurerm_resource_group" "resourcegroup" {
   tags     = var.tags
 }
 
-# output rg_names {
-#   value       = { for p in sort(keys(var.regions)) : p => azurerm_resource_group[p].name }
-# }
-
 output rg_name {
     value = azurerm_resource_group.resourcegroup.name
 }
