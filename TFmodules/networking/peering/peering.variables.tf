@@ -6,11 +6,6 @@ variable "netB_name" {
     
 }
 
-
-variable "netA_id" {
-
-}
-
 variable "netB_id" {
     
 }

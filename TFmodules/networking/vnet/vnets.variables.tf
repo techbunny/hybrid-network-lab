@@ -33,3 +33,6 @@ variable "dns_servers" {
 
 # }
 
+variable "region_zones" {
+  
+}

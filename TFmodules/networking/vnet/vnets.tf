@@ -38,6 +38,11 @@ resource "azurerm_subnet_network_security_group_association" "subnet" {
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
+# This output is here (not in the output file) because
+# it is needed to pass the zone info through to the VM deployment module. 
+output "zones" {
+    value = var.region_zones
+}
 
 
 
