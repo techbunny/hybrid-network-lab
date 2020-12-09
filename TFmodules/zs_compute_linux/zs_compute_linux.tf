@@ -82,3 +82,23 @@ resource "azurerm_public_ip" "compute" {
   tags = var.tags
 
 }
+
+resource "azurerm_virtual_machine_extension" "compute" {
+  count                = var.compute_instance_count
+  name                 = "${var.compute_hostname_prefix}-z${count.index + 1}-${random_string.compute.result}-${format("%.02d",count.index + 1)}"
+  virtual_machine_id   = element(azurerm_linux_virtual_machine.compute.*.id, count.index)
+  publisher            = "Microsoft.Azure.Extensions"
+  type                 = "CustomScript"
+  type_handler_version = "2.0"
+
+  settings = <<SETTINGS
+    {
+        "commandToExecute": "hostname && uptime"
+    }
+SETTINGS
+
+
+  tags = {
+    environment = "Production"
+  }
+}

@@ -17,6 +17,7 @@ variable regioninfo {
       cidr_net = "10.3.0.0"
     }
   }
+}
 
 
 # Base Variables 
@@ -60,5 +61,4 @@ variable "regions_with_sizes" {
   default = "westus2"
 }
 
-}
 
