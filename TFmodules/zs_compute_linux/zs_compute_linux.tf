@@ -27,7 +27,7 @@ resource "azurerm_linux_virtual_machine" "compute" {
   network_interface_ids         = [element(concat(azurerm_network_interface.compute.*.id), count.index)]
   # proximity_placement_group_id  = data.azurerm_proximity_placement_group.region_ppg[count.index].id 
   zone                          = count.index + 1
-                                          
+                                           
   
   tags = var.tags  
 

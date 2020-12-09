@@ -13,8 +13,28 @@ variable regioninfo {
       cidr_net = "10.2.0.0"
     },
     centralus = {
-      zones = "2"
+      zones = "3"
       cidr_net = "10.3.0.0"
+    },
+    eastus = {
+      zones = "3"
+      cidr_net = "10.4.0.0"
+    },
+    southcentralus = {
+      zones = "0"
+      cidr_net = "10.5.0.0"
+    },
+    japaneast = {
+      zones = "3"
+      cidr_net = "10.10.0.0"
+    },
+    northeurope = {
+      zones = "3"
+      cidr_net = "10.20.0.0"
+    },
+    westeurope = {
+      zones = "3"
+      cidr_net = "10.21.0.0"
     }
   }
 }
