@@ -23,22 +23,16 @@ module "resourcegroup" {
 
 locals {
 
-# EDIT AS NEEDED - List all the VM sizes you want deployed here. #
-  vm_sizes = [
-    "Standard_D2_v2",
-    "Standard_D4_v3",
-    "Standard_DS2_v2"]
-
-# Converts the list of VMs (above) to a set
+# Converts the list of VM Size Skus to a set
   vminfo = [
-    for key, vm_size in toset(local.vm_sizes) : {
+    for key, vm_size in toset(var.vm_sizes) : {
       key = key
       vm_size = key
     }
   ]
  
- # Creates a map of all requested regions for deployment, to be
- # used by the networking modules. 
+ # Creates a map of all requested regions for deployment, 
+ #and to be used by the networking modules. 
   regioninfo = [
     for key, region in var.regioninfo : {
       key = key
@@ -46,17 +40,38 @@ locals {
     }
   ]
   
-  # Creates a map of all requested VM types across all requested regions.
-  # Pulls in the number of AZs available in each region to deploy
-  # a VM of each type in each AZ in a given region. 
-  region_with_sizes = [
+ # Formats the Exclusion list.
+  exclusions_list = [
+    for region_key, vm_size in var.exclusions : {
+      region_key = region_key
+      vm_size = vm_size
+    }
+  ]
+
+ # Creates a map of all requested VM types across all requested regions.
+  regions_with_sizes = [
     for pair in setproduct(local.regioninfo, local.vminfo) : {
       region_key  = pair[0].key
       vm_size = pair[1].vm_size
-      vm_prefix = pair[1].vm_size
-      vnet_subnet_id = module.vnet1[pair[0].key].default_subnet_id
-      zones = module.vnet1[pair[0].key].zones
+    }
+  ]
 
+# Removes the specified exclusions and 
+  regions_with_exclusions = [
+    for pair in setsubtract(local.regions_with_sizes, local.exclusions_list) : pair
+  ]
+
+# Creates a final list of VMs to deploy in each region with additional information
+# needed regarding vnet/subnet destination and number of zones supported, each zone will
+# have a VM deployed.
+
+  regions_with_sizes_final = [
+    for vm in local.regions_with_exclusions : {
+      region_key  = vm.region_key
+      vm_size = vm.vm_size
+      vm_prefix = vm.vm_size
+      vnet_subnet_id = module.vnet1[vm.region_key].default_subnet_id
+      zones = module.vnet1[vm.region_key].zones
     }
   ]
 
@@ -70,6 +85,7 @@ locals {
       name_B = module.vnet1[pair[1].key].vnet_name
       id_B = module.vnet1[pair[1].key].vnet_id
     }
+    if pair[0] != pair[1]
   ]
 
 }
@@ -77,15 +93,14 @@ locals {
 ## OUTPUTS for REFERENCE ###
 # Use to see the results of the locals #
 
-# output "region_with_sizes" {
+# output "region_with_sizes_final" {
 #   value = [
-#     for pair in setproduct(local.regioninfo, local.vminfo) : {
-#       region_key  = pair[0].key
-#       vm_size = pair[1].vm_size
-#       vm_prefix = pair[1].vm_size
-#       vnet_subnet_id = module.vnet1[pair[0].key].default_subnet_id
-#       zones = module.vnet1[pair[0].key].zones
-
+#     for vm in local.regions_with_sizes_final : {
+#       region_key  = vm.region_key
+#       vm_size = vm.vm_size
+#       vm_prefix = vm.vm_size
+#       vnet_subnet_id = module.vnet1[vm.region_key].default_subnet_id
+#       zones = module.vnet1[vm.region_key].zones
 #     }
 #   ]
 # }
@@ -159,7 +174,7 @@ module "peering" {
 module "create_linuxserver_on_vnet" {
   source   = "../../TFmodules/zs_compute_linux"
   for_each = {
-    for vm in local.region_with_sizes : "${vm.region_key}.${vm.vm_size}" => vm
+    for vm in local.regions_with_sizes_final : "${vm.region_key}.${vm.vm_size}" => vm
   }
 
   resource_group_name = var.rg_name

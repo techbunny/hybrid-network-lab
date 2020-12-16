@@ -18,17 +18,17 @@ resource "random_string" "compute" {
 # Basic Linux, Single Zone
 resource "azurerm_linux_virtual_machine" "compute" {
 
-  count                         = var.compute_instance_count
-  name                          = "${var.compute_hostname_prefix}-z${count.index + 1}-${random_string.compute.result}-${format("%.02d",count.index + 1)}"
+  count                         = var.compute_instance_count != null ? var.compute_instance_count : 1
+  name                          = var.compute_instance_count != null ? "${var.compute_hostname_prefix}-z${count.index + 1}-${random_string.compute.result}-${format("%.02d",count.index + 1)}" : "${var.compute_hostname_prefix}-a${count.index + 1}-${random_string.compute.result}-${format("%.02d",count.index + 1)}"
   location                      = var.location
   resource_group_name           = var.resource_group_name
   admin_username                = var.admin_username
   size                          = var.vm_size
   network_interface_ids         = [element(concat(azurerm_network_interface.compute.*.id), count.index)]
-  # proximity_placement_group_id  = data.azurerm_proximity_placement_group.region_ppg[count.index].id 
-  zone                          = count.index + 1
-                                           
-  
+  zone = var.compute_instance_count != null ? count.index + 1 : null
+  availability_set_id           = null
+  # availability_set_id         = var.compute_instance_count != null ? var.avset_id : null
+                                         
   tags = var.tags  
 
   admin_ssh_key {
@@ -54,8 +54,9 @@ resource "azurerm_linux_virtual_machine" "compute" {
 }
 
 resource "azurerm_network_interface" "compute" {
-  count                         = var.compute_instance_count
-  name                          = "${var.compute_hostname_prefix}-z${count.index + 1}-${random_string.compute.result}-${format("%.02d",count.index + 1)}-nic" 
+  count                         = var.compute_instance_count != null ? var.compute_instance_count : 1
+  # name                          = "${var.compute_hostname_prefix}-z${count.index + 1}-${random_string.compute.result}-${format("%.02d",count.index + 1)}-nic" 
+  name                          = var.compute_instance_count != null ? "${var.compute_hostname_prefix}-z${count.index + 1}-${random_string.compute.result}-${format("%.02d",count.index + 1)}-nic" : "${var.compute_hostname_prefix}-a${count.index + 1}-${random_string.compute.result}-${format("%.02d",count.index + 1)}-nic"
   location                      = var.location
   resource_group_name           = var.resource_group_name
   enable_accelerated_networking = var.enable_accelerated_networking
@@ -71,12 +72,13 @@ resource "azurerm_network_interface" "compute" {
 }
 
 resource "azurerm_public_ip" "compute" {
-  count                         = var.compute_instance_count
-  name                          = "${var.compute_hostname_prefix}-z${count.index + 1}-${random_string.compute.result}-${format("%.02d",count.index + 1)}-pip" 
+  count                         = var.compute_instance_count != null ? var.compute_instance_count : 1
+  # name                          = "${var.compute_hostname_prefix}-z${count.index + 1}-${random_string.compute.result}-${format("%.02d",count.index + 1)}-pip" 
+  name                          = var.compute_instance_count != null ? "${var.compute_hostname_prefix}-z${count.index + 1}-${random_string.compute.result}-${format("%.02d",count.index + 1)}-pip" : "${var.compute_hostname_prefix}-a${count.index + 1}-${random_string.compute.result}-${format("%.02d",count.index + 1)}-pip"
   location                      = var.location
   resource_group_name           = var.resource_group_name
   allocation_method             = "Static"
-  zones                         = [count.index + 1]
+  zones = var.compute_instance_count != null ? [count.index + 1] : null
   sku                           = "Standard"
 
   tags = var.tags
@@ -84,7 +86,7 @@ resource "azurerm_public_ip" "compute" {
 }
 
 resource "azurerm_virtual_machine_extension" "compute" {
-  count                = var.compute_instance_count
+  count                = var.compute_instance_count != null ? var.compute_instance_count : 1
   name                 = "${var.compute_hostname_prefix}-z${count.index + 1}-${random_string.compute.result}-${format("%.02d",count.index + 1)}"
   virtual_machine_id   = element(azurerm_linux_virtual_machine.compute.*.id, count.index)
   publisher            = "Microsoft.Azure.Extensions"
@@ -102,3 +104,5 @@ SETTINGS
     environment = "Production"
   }
 }
+
+## Need to add in resource for AVSet creation if zones aren't used

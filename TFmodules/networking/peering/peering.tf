@@ -2,7 +2,7 @@
 # may be passed from a for_each loop.
 
 resource "azurerm_virtual_network_peering" "direction1" {
-  count                        = var.netA_name == var.netB_name ? 0 : 1
+  # count                        = var.netA_name == var.netB_name ? 0 : 1
   name                         = "${var.netA_name}-to-${var.netB_name}"
   resource_group_name          = var.resource_group_nameA
   virtual_network_name         = var.netA_name
