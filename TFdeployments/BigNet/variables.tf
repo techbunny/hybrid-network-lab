@@ -3,7 +3,6 @@
 variable vm_sizes {
   type = list(string)
   default = [
-    # "Standard_DC1s_v2", #Gen2 only
     "Standard_D2_v2",
     # "Standard_DS2_v2",
     # "Standard_D4_v3",
@@ -11,7 +10,7 @@ variable vm_sizes {
     # "Standard_D4a_v4",
     # "Standard_D4as_v4",
     # "Standard_D4d_v4",
-    # "Standard_D4ds_v4",no
+    # "Standard_D4ds_v4",
     # "Standard_D4_v4",
     # "Standard_D11_v2",
     # "Standard_DS11_v2",
@@ -24,27 +23,18 @@ variable vm_sizes {
     # "Standard_E4ds_v4",
     # "Standard_E4_v4",
     # "Standard_E4s_v4"
-    # "Standard_M8ms"
+    "Standard_M8ms"
+  ]
+}
+
+variable vm_sizes_gen2 {
+  type = list(string)
+  default = [
+    "Standard_DC2s_v2",  #Gen2 only
     # "Standard_M208sv2" #Gen2 only
   ]
 }
 
-# EDIT AS NEEDED # 
-# To account for any specific exclusions 
-
-variable exclusions {
-  default = {
-    japaneast = "Standard_M8ms", 
-    westeurope = "Standard_M8ms", 
-    # centralus = "Standard_M8ms",  #core quota limits
-    # northeurope = "Standard_M8ms", #core quota limits
-    # westus2 = "Standard_M8ms", #core quota
-    # eastus = "Standard_M8ms",  #core quota
-    # eastus2 = "Standard_M8ms",  #core quota
-    # southcentralus = "Standard_M8ms" #core quota limits
-    # eastus = "Standard_M208sv2"
-    }
-  }
 
 # EDIT AS NEEDED #
 # Set the details for all the regions needed
@@ -60,25 +50,25 @@ variable regioninfo {
       zones = "1"
       cidr_net = "10.2.0.0"
     },
-    centralus = {
-      zones = "1"
-      cidr_net = "10.3.0.0"
-    },
-    eastus = {
-      zones = "1"
-      cidr_net = "10.4.0.0"
-    },
+    # centralus = {
+    #   zones = "1"
+    #   cidr_net = "10.3.0.0"
+    # },
+    # eastus = {
+    #   zones = "1"
+    #   cidr_net = "10.4.0.0"
+    # },
     southcentralus = {
       zones = null
       cidr_net = "10.5.0.0"
-    },
-    japaneast = {
-      zones = "3"
-      cidr_net = "10.10.0.0"
-    },
-    northeurope = {
-      zones = "1"
-      cidr_net = "10.20.0.0"
+    # },
+    # japaneast = {
+    #   zones = "1"
+    #   cidr_net = "10.10.0.0"
+    # },
+    # northeurope = {
+    #   zones = "1"
+    #   cidr_net = "10.20.0.0"
     },
     westeurope = {
       zones = "1"
@@ -86,6 +76,19 @@ variable regioninfo {
     }
   }
 }
+
+# EDIT AS NEEDED # 
+# To account for any specific exclusions 
+
+variable exclusions {
+  default = {
+    japaneast = "Standard_M8ms", 
+    westeurope = "Standard_M8ms", 
+    # eastus = "Standard_M208sv2"
+    westus2 = "Standard_M8ms", #quota limits
+    southcentralus = "Standard_M8ms" #quota limits
+    }
+  }
 
 
 # Base Variables 
@@ -127,6 +130,10 @@ variable "storage_account_type" {
 
 variable "regions_with_sizes" {
   default = "westus2"
+}
+
+variable "default_os_sku" {
+  default = "7-LVM"
 }
 
 

@@ -28,11 +28,26 @@ locals {
     for key, vm_size in toset(var.vm_sizes) : {
       key = key
       vm_size = key
+      os_sku = var.default_os_sku
     }
   ]
+
+  vminfo_gen2 = [
+    for key, vm_size in toset(var.vm_sizes_gen2) : {
+      key = key
+      vm_size = key
+      os_sku = "7lvm-gen2"
+    }
+  ]
+
+# Combines both lists from above into one. 
+  all_vms =  [
+    for allvms in concat(local.vminfo, local.vminfo_gen2) : allvms
+  ]
+  
  
  # Creates a map of all requested regions for deployment, 
- #and to be used by the networking modules. 
+ # and to be used by the networking modules. 
   regioninfo = [
     for key, region in var.regioninfo : {
       key = key
@@ -40,23 +55,28 @@ locals {
     }
   ]
   
- # Formats the Exclusion list.
+# Creates a map of all requested VM types across all requested regions.
+  regions_with_sizes = [
+    #for pair in setproduct(local.regioninfo, local.vminfo) : {
+    for pair in setproduct(local.regioninfo, local.all_vms) : {
+      region_key  = pair[0].key
+      vm_size = pair[1].vm_size
+      os_sku = pair[1].os_sku
+    }
+  ]
+
+ # Formats the exclusion list for regions that can't support a subset
+ # of the VM size skus.
   exclusions_list = [
     for region_key, vm_size in var.exclusions : {
       region_key = region_key
       vm_size = vm_size
+      os_sku = var.default_os_sku
+
     }
   ]
 
- # Creates a map of all requested VM types across all requested regions.
-  regions_with_sizes = [
-    for pair in setproduct(local.regioninfo, local.vminfo) : {
-      region_key  = pair[0].key
-      vm_size = pair[1].vm_size
-    }
-  ]
-
-# Removes the specified exclusions and 
+# Removes the specified exclusions
   regions_with_exclusions = [
     for pair in setsubtract(local.regions_with_sizes, local.exclusions_list) : pair
   ]
@@ -67,11 +87,13 @@ locals {
 
   regions_with_sizes_final = [
     for vm in local.regions_with_exclusions : {
+    # for vm in merge(local.regions_with_exclusions, local.regions_with_sizes_gen2) : {  
       region_key  = vm.region_key
       vm_size = vm.vm_size
       vm_prefix = vm.vm_size
       vnet_subnet_id = module.vnet1[vm.region_key].default_subnet_id
       zones = module.vnet1[vm.region_key].zones
+      os_sku = vm.os_sku
     }
   ]
 
@@ -93,17 +115,18 @@ locals {
 ## OUTPUTS for REFERENCE ###
 # Use to see the results of the locals #
 
-# output "region_with_sizes_final" {
-#   value = [
-#     for vm in local.regions_with_sizes_final : {
-#       region_key  = vm.region_key
-#       vm_size = vm.vm_size
-#       vm_prefix = vm.vm_size
-#       vnet_subnet_id = module.vnet1[vm.region_key].default_subnet_id
-#       zones = module.vnet1[vm.region_key].zones
-#     }
-#   ]
-# }
+output "region_with_sizes_final" {
+  value = [
+    for vm in local.regions_with_exclusions : {
+      region_key  = vm.region_key
+      vm_size = vm.vm_size
+      vm_prefix = vm.vm_size
+      vnet_subnet_id = module.vnet1[vm.region_key].default_subnet_id
+      zones = module.vnet1[vm.region_key].zones
+      os_sku = vm.os_sku
+    }
+  ]
+}
 
 # output "vnet_to_vnet" {
 #   value = [
@@ -117,6 +140,12 @@ locals {
 #     }
 #   ]
 # }
+
+  output "all_vms" {
+    value = [
+    for allvms in concat(local.vminfo, local.vminfo_gen2) : allvms
+  ]
+  }
 
 ## VNETS
 
@@ -187,7 +216,7 @@ module "create_linuxserver_on_vnet" {
   vm_size              = each.value.vm_size
   os_publisher         = "RedHat"
   os_offer             = "RHEL"
-  os_sku               = "7-LVM"
+  os_sku               = each.value.os_sku
   os_version           = "latest"
   storage_account_type = var.storage_account_type
   admin_username                = var.admin_username

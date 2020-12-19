@@ -25,7 +25,7 @@ resource "azurerm_linux_virtual_machine" "compute" {
   admin_username                = var.admin_username
   size                          = var.vm_size
   network_interface_ids         = [element(concat(azurerm_network_interface.compute.*.id), count.index)]
-  zone = var.compute_instance_count != null ? count.index + 1 : null
+  zone                          = var.compute_instance_count != null ? count.index + 1 : null
   availability_set_id           = null
   # availability_set_id         = var.compute_instance_count != null ? var.avset_id : null
                                          
