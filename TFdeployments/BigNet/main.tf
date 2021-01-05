@@ -4,7 +4,7 @@
 # deployment), this must be deployed twice, first to just
 # deploy the VNETs so they are known for the next run.
 
-# 1) terraform apply -target=module.vnets1
+# 1) terraform apply -target=module.vnet1
 # 2) terraform apply
 
 ## Creates single RG for test deployment
@@ -36,7 +36,7 @@ locals {
     for key, vm_size in toset(var.vm_sizes_gen2) : {
       key = key
       vm_size = key
-      os_sku = "7lvm-gen2"
+      os_sku = var.gen2_os_sku
     }
   ]
 
@@ -66,7 +66,7 @@ locals {
   ]
 
  # Formats the exclusion list for regions that can't support a subset
- # of the VM size skus.
+ # of the VM size skus, for both GEN1 and GEN2 OS skus
   exclusions_list = [
     for region_key, vm_size in var.exclusions : {
       region_key = region_key
@@ -76,9 +76,23 @@ locals {
     }
   ]
 
+  exclusions_list_gen2 = [
+    for region_key, vm_size in var.exclusions : {
+      region_key = region_key
+      vm_size = vm_size
+      os_sku = var.gen2_os_sku
+
+    }
+  ]
+
+# Combines both lists from above into one. 
+  all_exclusions =  [
+    for all_ex in concat(local.exclusions_list, local.exclusions_list_gen2) : all_ex
+  ]
+
 # Removes the specified exclusions
   regions_with_exclusions = [
-    for pair in setsubtract(local.regions_with_sizes, local.exclusions_list) : pair
+    for pair in setsubtract(local.regions_with_sizes, local.all_exclusions) : pair
   ]
 
 # Creates a final list of VMs to deploy in each region with additional information
@@ -87,7 +101,6 @@ locals {
 
   regions_with_sizes_final = [
     for vm in local.regions_with_exclusions : {
-    # for vm in merge(local.regions_with_exclusions, local.regions_with_sizes_gen2) : {  
       region_key  = vm.region_key
       vm_size = vm.vm_size
       vm_prefix = vm.vm_size

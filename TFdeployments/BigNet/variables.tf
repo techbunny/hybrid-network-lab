@@ -3,7 +3,7 @@
 variable vm_sizes {
   type = list(string)
   default = [
-    "Standard_D2_v2",
+    # "Standard_D2_v2",
     # "Standard_DS2_v2",
     # "Standard_D4_v3",
     # "Standard_D4s_v3",
@@ -69,10 +69,10 @@ variable regioninfo {
     # northeurope = {
     #   zones = "1"
     #   cidr_net = "10.20.0.0"
-    },
-    westeurope = {
-      zones = "1"
-      cidr_net = "10.21.0.0"
+    # },
+    # westeurope = {
+    #   zones = "1"
+    #   cidr_net = "10.21.0.0"
     }
   }
 }
@@ -82,10 +82,11 @@ variable regioninfo {
 
 variable exclusions {
   default = {
-    japaneast = "Standard_M8ms", 
-    westeurope = "Standard_M8ms", 
+    # japaneast = "Standard_M8ms", 
+    # westeurope = "Standard_M8ms", 
     # eastus = "Standard_M208sv2"
     westus2 = "Standard_M8ms", #quota limits
+    eastus2 = "Standard_DC2s_v2",
     southcentralus = "Standard_M8ms" #quota limits
     }
   }
@@ -112,6 +113,14 @@ variable "tags" {
 
 # Variables for the VM deployment 
 
+variable "default_os_sku" {
+  default = "7-LVM"
+}
+
+variable "gen2_os_sku" {
+  default = "7lvm-gen2"
+}
+
 variable "boot_diag_SA_endpoint" {
   default = "0"
 }
@@ -132,8 +141,6 @@ variable "regions_with_sizes" {
   default = "westus2"
 }
 
-variable "default_os_sku" {
-  default = "7-LVM"
-}
+
 
 
