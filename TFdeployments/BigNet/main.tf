@@ -154,11 +154,6 @@ output "region_with_sizes_final" {
 #   ]
 # }
 
-  output "all_vms" {
-    value = [
-    for allvms in concat(local.vminfo, local.vminfo_gen2) : allvms
-  ]
-  }
 
 ## VNETS
 
